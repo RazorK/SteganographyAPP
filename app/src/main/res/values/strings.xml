@@ -3,6 +3,12 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
+    <string name="main_login_btn_string">Login</string>
     <string name="action_settings">Settings</string>
+
+    <!-- login -->
+    <string name="idtxthint">idtxthint</string>
+    <string name="pwdtxthint">pwdtxthint</string>
+    <string name="loginbtntext">loginbtntext</string>
+    <string name="forgot_pwd">forgot_pwd</string>
 </resources>
