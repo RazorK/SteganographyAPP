@@ -7,8 +7,8 @@
     <string name="action_settings">Settings</string>
 
     <!-- login -->
-    <string name="idtxthint">idtxthint</string>
-    <string name="pwdtxthint">pwdtxthint</string>
-    <string name="loginbtntext">loginbtntext</string>
-    <string name="forgot_pwd">forgot_pwd</string>
+    <string name="idtxthint">Username</string>
+    <string name="pwdtxthint">Password</string>
+    <string name="loginbtntext">Login</string>
+    <string name="forgot_pwd">Forget Password?</string>
 </resources>

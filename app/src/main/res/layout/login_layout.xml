@@ -57,9 +57,9 @@
                 <ImageView
                     android:id="@+id/login_more_user"
                     android:layout_width="wrap_content"
-                    android:layout_height="44dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginRight="15dp"
-                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center"
                     android:src="@drawable/login_more_up" />
             </LinearLayout>
 
@@ -86,12 +86,12 @@
         <Button
             android:id="@+id/login_btnLogin"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="55dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/login_button_style"
             android:text="@string/loginbtntext"
             android:textColor="#FFFFFF"
-            android:textSize="19sp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
     <LinearLayout
