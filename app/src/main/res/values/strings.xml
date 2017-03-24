@@ -8,7 +8,8 @@
 
     <!-- login -->
     <string name="idtxthint">Username</string>
-    <string name="pwdtxthint">Password</string>
+    <string name="pwdtxthint">Targetname</string>
     <string name="loginbtntext">Login</string>
     <string name="forgot_pwd">Forget Password?</string>
+    <string name="login_null_name_tip">请输入用户名</string>
 </resources>

@@ -75,7 +75,6 @@
                 android:layout_height="44dp"
                 android:background="@null"
                 android:hint="@string/pwdtxthint"
-                android:inputType="textPassword"
                 android:paddingLeft="15dp"
                 android:paddingRight="0dp"
                 android:singleLine="true"
