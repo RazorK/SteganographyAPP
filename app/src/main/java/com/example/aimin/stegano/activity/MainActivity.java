@@ -1,7 +1,6 @@
 package com.example.aimin.stegano.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -9,18 +8,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.AVIMConversation;
-import com.avos.avoscloud.im.v2.AVIMException;
-import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
-import com.avos.avoscloud.im.v2.messages.AVIMTextMessage;
-import com.example.aimin.stegano.ClientManager;
 import com.example.aimin.stegano.R;
-import com.example.aimin.stegano.event.TypedMessageEvent;
 
 import butterknife.Bind;
 
@@ -43,36 +35,7 @@ public class MainActivity extends BaseActivity
         //toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle(getIntent().getStringExtra("title"));
 
-        //信封fab
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String targetID = getIntent().getStringExtra("target");
-                String conversationId = getIntent().getStringExtra("conversation");
-                AVIMTextMessage msg = new AVIMTextMessage();
-                msg.setText(chatinput.getText().toString().trim());
-                chatText.append(msg.getText()+'\n');
-                AVIMClient client = ClientManager.getInstance().getClient();
-                if (null != client) {
-                    chatConversation = client.getConversation(conversationId);
-                    chatConversation.sendMessage(msg, new AVIMConversationCallback() {
-                        @Override
-                        public void done(AVIMException e) {
-                            if(filterException(e)){
-                                toast("Success");
-                            }
-                        }
-                    });
-                } else {
-                    finish();
-                    showToast("Please call AVIMClient.open first!");
-                }
-
-            }
-        });
 
         //侧滑菜单
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -86,12 +49,6 @@ public class MainActivity extends BaseActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    /**
-     * 处理推送消息
-     */
-    public void onEvent(TypedMessageEvent event) {
-        chatText.append(event.message.getContent()+ " From: " + event.message.getFrom()+'\n');
-    }
 
     @Override
     public void onBackPressed() {

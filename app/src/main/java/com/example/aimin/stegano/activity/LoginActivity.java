@@ -2,23 +2,14 @@ package com.example.aimin.stegano.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.avos.avoscloud.im.v2.AVIMClient;
-import com.avos.avoscloud.im.v2.AVIMConversation;
-import com.avos.avoscloud.im.v2.AVIMConversationQuery;
-import com.avos.avoscloud.im.v2.AVIMException;
-import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
-import com.avos.avoscloud.im.v2.callback.AVIMConversationCreatedCallback;
-import com.avos.avoscloud.im.v2.callback.AVIMConversationQueryCallback;
-import com.example.aimin.stegano.ClientManager;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.LogInCallback;
 import com.example.aimin.stegano.R;
-
-import java.util.Arrays;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -46,62 +37,28 @@ public class LoginActivity extends BaseActivity {
 
     @OnClick(R.id.login_btnLogin)
     public void onLoginClick(View view) {
-        openClient(loginEditView.getText().toString().trim(), pwdEditView.getText().toString().trim());
+        attemptLogin();
     }
 
-    private void openClient(final String selfId, final String targetID) {
-        if (TextUtils.isEmpty(selfId) || TextUtils.isEmpty(targetID)) {
-            showToast(R.string.login_null_name_tip);
-            return;
-        }
-        loginButton.setEnabled(false);
-        loginEditView.setEnabled(false);
-        pwdEditView.setEnabled(false);
-        ClientManager.getInstance().open(selfId, new AVIMClientCallback() {
-            @Override
-            public void done(final AVIMClient avimClient, AVIMException e) {
-                if(filterException(e)){
-                    loginButton.setEnabled(true);
-                    loginEditView.setEnabled(true);
-                    pwdEditView.setEnabled(true);
+    @OnClick(R.id.login_go_register)
+    public void onRegisterClick(View view) {
+        startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+    }
 
-                    AVIMConversationQuery conversationQuery = avimClient.getQuery();
-                    conversationQuery.withMembers(Arrays.asList(targetID), true);
-                    conversationQuery.findInBackground(new AVIMConversationQueryCallback() {
-                        @Override
-                        public void done(List<AVIMConversation> list, AVIMException e) {
-                            String transConversationId;
-                            if(filterException(e)){
-                                if(null != list && list.size()>0) {
-                                    transConversationId = list.get(0).getConversationId();
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    intent.putExtra("target",targetID);
-                                    intent.putExtra("title", selfId + " && " + targetID);
-                                    intent.putExtra("conversation", transConversationId);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                                else {
-                                    avimClient.createConversation(Arrays.asList(targetID), selfId + " && " + targetID, null, new AVIMConversationCreatedCallback() {
-                                        @Override
-                                        public void done(AVIMConversation avimConversation, AVIMException e) {
-                                            if(filterException(e)){
-                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                                intent.putExtra("target",targetID);
-                                                intent.putExtra("title", selfId + " && " + targetID);
-                                                intent.putExtra("conversation", avimConversation.getConversationId());
-                                                startActivity(intent);
-                                                finish();
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    });
+    private void attemptLogin() {
+        String username = loginEditView.getText().toString().trim();
+        String password = pwdEditView.getText().toString().trim();
+        AVUser.logInInBackground(username, password, new LogInCallback<AVUser>() {
+            @Override
+            public void done(AVUser avUser, AVException e) {
+                if (e == null) {
+                    LoginActivity.this.finish();
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                } else {
+                    toast(e.getMessage());
                 }
             }
         });
-
     }
+
 }
