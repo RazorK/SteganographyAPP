@@ -5,27 +5,32 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import com.avos.avoscloud.im.v2.AVIMConversation;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.FindCallback;
 import com.example.aimin.stegano.R;
+import com.example.aimin.stegano.adapter.FriendAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    @Bind(R.id.main_chatinput)
-    protected EditText chatinput;
-
-    @Bind(R.id.main_output_text)
-    protected TextView chatText;
-
-    private AVIMConversation chatConversation;
+    @Bind(R.id.main_friend_list)
+    RecyclerView friendRecycler;
+    private FriendAdapter friendAdapter;
+    private List<AVObject> mList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +52,22 @@ public class MainActivity extends BaseActivity
         //侧滑菜单中信息显示部分
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //好友列表
+        friendRecycler = (RecyclerView) findViewById(R.id.main_friend_list);
+        friendRecycler.setHasFixedSize(true);
+        friendRecycler.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        friendAdapter = new FriendAdapter(mList, MainActivity.this);
+        friendRecycler.setAdapter(friendAdapter);
+        friendRecycler.addItemDecoration(new DividerItemDecoration(
+                this, DividerItemDecoration.VERTICAL));
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        initData();
+    }
 
     @Override
     public void onBackPressed() {
@@ -105,5 +124,22 @@ public class MainActivity extends BaseActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void initData(){
+        mList.clear();
+        AVQuery<AVObject> avQuery = new AVQuery<>("_User");
+        avQuery.orderByDescending("createdAt");
+        avQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    mList.addAll(list);
+                    friendAdapter.notifyDataSetChanged();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
