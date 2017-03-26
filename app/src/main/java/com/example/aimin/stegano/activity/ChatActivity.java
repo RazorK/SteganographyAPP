@@ -55,6 +55,7 @@ public class ChatActivity extends BaseActivity {
 
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.btn_navigation_back);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.common_white));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

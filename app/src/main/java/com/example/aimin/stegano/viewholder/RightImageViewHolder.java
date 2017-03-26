@@ -1,6 +1,7 @@
 package com.example.aimin.stegano.viewholder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,8 +17,10 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
-import com.squareup.picasso.Picasso;
+import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
+import com.example.aimin.stegano.activity.ImageActivity;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -131,6 +134,19 @@ public class RightImageViewHolder extends CommonViewHolder {
                 Log.d("resend", "hello may i");
                 statusView.setVisibility(View.GONE);
             }
+
+            contentView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), ImageActivity.class);
+                    intent.setPackage(getContext().getPackageName());
+                    intent.putExtra(Constants.IMAGE_LOCAL_PATH, message.getLocalFilePath());
+                    intent.putExtra(Constants.IMAGE_URL, message.getFileUrl());
+                    intent.putExtra(Constants.IMAGE_HEIGHT,(double) message.getHeight());
+                    intent.putExtra(Constants.IMAGE_WIDTH,(double) message.getWidth());
+                    getContext().startActivity(intent);
+                }
+            });
         }
 
     }

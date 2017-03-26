@@ -1,6 +1,7 @@
 package com.example.aimin.stegano.viewholder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
+import com.example.aimin.stegano.Constants;
+import com.example.aimin.stegano.activity.ImageActivity;
 import com.example.aimin.stegano.R;
 import com.squareup.picasso.Picasso;
 
@@ -44,7 +47,7 @@ public class LeftImageViewHolder extends CommonViewHolder {
     @Override
     public void bindData(Object o) {
         if(o instanceof AVIMImageMessage) {
-            AVIMImageMessage message = (AVIMImageMessage)o;
+            final AVIMImageMessage message = (AVIMImageMessage)o;
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
             String time = dateFormat.format(message.getTimestamp());
 
@@ -88,6 +91,19 @@ public class LeftImageViewHolder extends CommonViewHolder {
                 @Override
                 public void done(AVObject avObject, AVException e) {
                     nameView.setText(avObject.get("username").toString());
+                }
+            });
+
+            contentView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), ImageActivity.class);
+                    intent.setPackage(getContext().getPackageName());
+                    intent.putExtra(Constants.IMAGE_LOCAL_PATH, message.getLocalFilePath());
+                    intent.putExtra(Constants.IMAGE_URL, message.getFileUrl());
+                    intent.putExtra(Constants.IMAGE_HEIGHT,(double) message.getHeight());
+                    intent.putExtra(Constants.IMAGE_WIDTH,(double) message.getWidth());
+                    getContext().startActivity(intent);
                 }
             });
         }
