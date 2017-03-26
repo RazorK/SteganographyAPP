@@ -8,4 +8,6 @@
 
     <!-- login page -->
     <dimen name="login_padding_top">50dp</dimen>
+    <dimen name="chat_input_bar_height">55dp</dimen>
+    <dimen name="chat_horizontal_margin">15dp</dimen>
 </resources>

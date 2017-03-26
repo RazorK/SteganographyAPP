@@ -1,5 +1,6 @@
 package com.example.aimin.stegano.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,8 +17,10 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.FindCallback;
+import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.adapter.FriendAdapter;
+import com.example.aimin.stegano.event.FriendClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,5 +144,16 @@ public class MainActivity extends BaseActivity
                 }
             }
         });
+    }
+
+    /**
+     * 主要用来处理好友列表的点击事件，直接开启ChatActivity
+     * @param event
+     *
+     */
+    public void onEvent(FriendClickEvent event) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra(Constants.MEMBER_ID, event.targetID);
+        startActivity(intent);
     }
 }

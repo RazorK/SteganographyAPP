@@ -9,6 +9,10 @@ import android.widget.EditText;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogInCallback;
+import com.avos.avoscloud.im.v2.AVIMClient;
+import com.avos.avoscloud.im.v2.AVIMException;
+import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
+import com.example.aimin.stegano.ClientManager;
 import com.example.aimin.stegano.R;
 
 import butterknife.Bind;
@@ -52,8 +56,16 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void done(AVUser avUser, AVException e) {
                 if (e == null) {
-                    LoginActivity.this.finish();
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    //IMClient OPEN
+                    ClientManager.getInstance().open(avUser.getObjectId().toString(), new AVIMClientCallback() {
+                        @Override
+                        public void done(AVIMClient avimClient, AVIMException e) {
+                            if(filterException(e)){
+                                LoginActivity.this.finish();
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            }
+                        }
+                    });
                 } else {
                     toast(e.getMessage());
                 }

@@ -9,6 +9,9 @@ import android.widget.Toast;
 
 import com.avos.avoscloud.AVObject;
 import com.example.aimin.stegano.R;
+import com.example.aimin.stegano.event.FriendClickEvent;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by aimin on 2017/3/25.
@@ -32,12 +35,25 @@ public class FriendViewHolder extends RecyclerView.ViewHolder {
         friendLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toast(user.get("username").toString());
+                //创建ChatACtivity，在其中创建会话 这里传递TargetID进去即可, 为了整理结构，这里使用Event
+                FriendClickEvent clickEvent = new FriendClickEvent();
+                clickEvent.targetID = user.getObjectId().toString();
+                EventBus.getDefault().post(clickEvent);
             }
         });
     }
 
     protected void toast(String str) {
         Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+    }
+
+    protected boolean filterException(Exception e) {
+        if (e != null) {
+            e.printStackTrace();
+            toast(e.getMessage());
+            return false;
+        } else {
+            return true;
+        }
     }
 }
