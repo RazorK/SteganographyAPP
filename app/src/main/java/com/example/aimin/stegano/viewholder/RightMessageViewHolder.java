@@ -73,6 +73,9 @@ public class RightMessageViewHolder extends CommonViewHolder {
 
         contentView.setText(content);
         timeView.setText(time);
+
+        //getUsername
+        //TODO: 一次获取存储
         AVQuery<AVObject> avQuery = new AVQuery<>("_User");
         avQuery.getInBackground(message.getFrom(), new GetCallback<AVObject>() {
             @Override

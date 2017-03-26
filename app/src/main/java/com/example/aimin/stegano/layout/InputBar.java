@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.aimin.stegano.R;
+import com.example.aimin.stegano.event.InputBottomBarEvent;
 import com.example.aimin.stegano.event.InputBottomBarTextEvent;
 
 import de.greenrobot.event.EventBus;
@@ -30,6 +31,8 @@ public class InputBar extends LinearLayout {
      * 发送文本的Button
      */
     private ImageButton sendTextBtn;
+
+    private ImageButton addPhotoBtn;
 
     private EditText contentView;
 
@@ -48,6 +51,7 @@ public class InputBar extends LinearLayout {
 
         sendTextBtn = (ImageButton) findViewById(R.id.input_bottom_bar_btn_send);
         contentView = (EditText) findViewById(R.id.input_bottom_bar_et_content);
+        addPhotoBtn = (ImageButton) findViewById(R.id.input_bottom_bar_btn_add);
 
         setEditTextChangeListener();
 
@@ -73,6 +77,16 @@ public class InputBar extends LinearLayout {
                 Log.d("raz", "onClick: sendTextBtn"+ content);
                 EventBus.getDefault().post(
                         new InputBottomBarTextEvent(InputBottomBarTextEvent.INPUTBOTTOMBAR_SEND_TEXT_ACTION, content, getTag()));
+            }
+        });
+
+        /**
+         * 此处发送Add事件， 于ChatFragment中接受
+         */
+        addPhotoBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new InputBottomBarEvent(InputBottomBarEvent.INPUTBOTTOMBAR_ADD_ACTION, getTag()));
             }
         });
     }

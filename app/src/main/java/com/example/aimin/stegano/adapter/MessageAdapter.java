@@ -4,9 +4,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.avos.avoscloud.im.v2.AVIMMessage;
+import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
+import com.avos.avoscloud.im.v2.messages.AVIMTextMessage;
 import com.example.aimin.stegano.ClientManager;
 import com.example.aimin.stegano.viewholder.CommonViewHolder;
+import com.example.aimin.stegano.viewholder.LeftImageViewHolder;
 import com.example.aimin.stegano.viewholder.LeftMessageViewHolder;
+import com.example.aimin.stegano.viewholder.RightImageViewHolder;
 import com.example.aimin.stegano.viewholder.RightMessageViewHolder;
 
 import java.util.ArrayList;
@@ -19,7 +23,13 @@ import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int ITEM_LEFT_TEXT = 0;
-    private final int ITEM_RIGHT_TEXT = 1;
+    private final int ITEM_LEFT_IMAGE = 1;
+
+    private final int ITEM_RIGHT_TEXT = 2;
+    private final int ITEM_RIGHT_IMAGE = 3;
+
+    private final int ITEM_TYPE_UNKNOWN = 4;
+
 
     // 时间间隔最小为十分钟
     private final long TIME_INTERVAL = 5 * 60 * 1000;
@@ -58,7 +68,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return new LeftMessageViewHolder(parent.getContext(), parent);
         } else if (viewType == ITEM_RIGHT_TEXT) {
             return new RightMessageViewHolder(parent.getContext(), parent);
-        } else {
+        } else if(viewType ==ITEM_RIGHT_IMAGE) {
+            return new RightImageViewHolder(parent.getContext(),parent);
+        } else if(viewType ==ITEM_LEFT_IMAGE) {
+            return new LeftImageViewHolder(parent.getContext(),parent);
+        }
+        else {
             //TODO
             return null;
         }
@@ -78,9 +93,21 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int getItemViewType(int position) {
         AVIMMessage message = messageList.get(position);
         if (message.getFrom().equals(ClientManager.getInstance().getClientId())) {
-            return ITEM_RIGHT_TEXT;
+            //return ITEM_RIGHT_TEXT;
+            if(message instanceof AVIMTextMessage) {
+                return ITEM_RIGHT_TEXT;
+            } else if(message instanceof AVIMImageMessage) {
+                return ITEM_RIGHT_IMAGE;
+            } else {
+                return ITEM_TYPE_UNKNOWN;
+            }
         } else {
-            return ITEM_LEFT_TEXT;
+            if(message instanceof AVIMTextMessage) {
+                return ITEM_LEFT_TEXT;
+            } else if(message instanceof AVIMImageMessage) {
+                return ITEM_LEFT_IMAGE;
+            } else
+                return ITEM_TYPE_UNKNOWN;
         }
     }
 
