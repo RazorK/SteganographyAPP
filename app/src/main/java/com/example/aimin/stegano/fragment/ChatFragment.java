@@ -27,7 +27,9 @@ import com.avos.avoscloud.im.v2.callback.AVIMConversationCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMMessagesQueryCallback;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMTextMessage;
+import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
+import com.example.aimin.stegano.activity.SteganoActivity;
 import com.example.aimin.stegano.adapter.MessageAdapter;
 import com.example.aimin.stegano.event.InputBottomBarEvent;
 import com.example.aimin.stegano.event.InputBottomBarTextEvent;
@@ -35,7 +37,9 @@ import com.example.aimin.stegano.event.TypedMessageEvent;
 import com.example.aimin.stegano.layout.InputBar;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.greenrobot.event.EventBus;
 
@@ -45,6 +49,7 @@ import de.greenrobot.event.EventBus;
 
 public class ChatFragment extends Fragment {
     //Result Intent Flag
+    private static final int REQUEST_STEGANO_INSERT = 1;
     private static final int REQUEST_IMAGE_PICK = 2;
 
     private AVIMConversation mConversation;
@@ -133,8 +138,12 @@ public class ChatFragment extends Fragment {
             switch (requestCode) {
                 case REQUEST_IMAGE_PICK:
                     Log.d("raz","get Picture url, "+data.getData());
-                    sendImage(getRealPathFromURI(getActivity(), data.getData()));
+                    sendImage(getRealPathFromURI(getActivity(), data.getData()),false);
                     break;
+                case REQUEST_STEGANO_INSERT:
+                    String path = data.getStringExtra(Constants.STEGANO_SETIMAGE_PATH);
+                    Log.d("raz","get set Picture location" + path);
+                    sendImage(path, true);
                 default:
                     break;
             }
@@ -160,6 +169,7 @@ public class ChatFragment extends Fragment {
      */
     private String getRealPathFromURI(Context context, Uri contentUri) {
         if (contentUri.getScheme().equals("file")) {
+            Log.d("raz","1in ChatFragment getRealpath "+ contentUri.getEncodedPath());
             return contentUri.getEncodedPath();
         } else {
             Cursor cursor = null;
@@ -169,6 +179,7 @@ public class ChatFragment extends Fragment {
                 if (null != cursor) {
                     int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                     cursor.moveToFirst();
+                    Log.d("raz","2in ChatFragment getRealpath "+ cursor.getString(column_index));
                     return cursor.getString(column_index);
                 } else {
                     return "";
@@ -187,9 +198,12 @@ public class ChatFragment extends Fragment {
      *
      * @param imagePath
      */
-    protected void sendImage(String imagePath) {
+    protected void sendImage(String imagePath, boolean stegano) {
         try {
             AVIMImageMessage picture = new AVIMImageMessage(imagePath);
+            Map< String, Object > attributes = new HashMap< String, Object >();
+            attributes.put("stegano", stegano);
+            picture.setAttrs(attributes);
             sendMessage(picture);
         } catch (IOException e) {
             Log.e("raz image send error",e.getMessage());
@@ -248,9 +262,18 @@ public class ChatFragment extends Fragment {
         if (null != mConversation && null != event) {
             switch (event.eventAction){
                 case InputBottomBarEvent.INPUTBOTTOMBAR_ADD_ACTION:
+                    /*Intent intent = new Intent(getActivity(), SteganoActivity.class);
+                    startActivityForResult(intent, REQUEST_STEGANO_INSERT);*/
+                    break;
+                case InputBottomBarEvent.INPUTBOTTOMBAR_IMAGE_ACTION:
+                    Log.d("raz","image event received");
                     Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, null);
                     photoPickerIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                     startActivityForResult(photoPickerIntent, REQUEST_IMAGE_PICK);
+                    break;
+                case InputBottomBarEvent.INPUTBOTTOMBAR_STEGANO_ACTION:
+                    Intent steIntent = new Intent(getActivity(), SteganoActivity.class);
+                    startActivityForResult(steIntent, REQUEST_STEGANO_INSERT);
                     break;
                 default:
                     LogUtil.log.e("InputBottomBarEvent unknown event type");
@@ -265,6 +288,12 @@ public class ChatFragment extends Fragment {
     public void onEvent(TypedMessageEvent event) {
         if (null != mConversation && null != event &&
                 mConversation.getConversationId().equals(event.conversation.getConversationId())) {
+            if(event.message instanceof AVIMImageMessage){
+                AVIMImageMessage msg = (AVIMImageMessage) event.message;
+                if(!msg.getFileMetaData().containsKey("format")) {
+                    return;
+                }
+            }
             itemAdapter.addMessage(event.message);
             itemAdapter.notifyDataSetChanged();
             scrollToBottom();

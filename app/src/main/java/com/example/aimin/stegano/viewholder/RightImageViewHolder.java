@@ -84,29 +84,29 @@ public class RightImageViewHolder extends CommonViewHolder {
             double viewHeight = MAX_DEFAULT_HEIGHT;
             double viewWidth = MAX_DEFAULT_WIDTH;
 
-            if (0 != actualHight && 0 != actualWidth) {
-                // 要保证图片的长宽比不变
-                double ratio = actualHight / actualWidth;
-                if (ratio > viewHeight / viewWidth) {
-                    viewHeight = (actualHight > viewHeight ? viewHeight : actualHight);
-                    viewWidth = viewHeight / ratio;
-                } else {
-                    viewWidth = (actualWidth > viewWidth ? viewWidth : actualWidth);
-                    viewHeight = viewWidth * ratio;
-                }
-            }
+            Constants.HW hw = Constants.resize(actualHight, actualWidth, viewHeight,viewWidth);
+            viewHeight = hw.height;
+            viewWidth = hw.width;
+            Log.d("raz","in right"+viewHeight+"  "+viewWidth);
 
-            contentView.getLayoutParams().height = (int) viewHeight;
-            contentView.getLayoutParams().width = (int) viewWidth;
-            if (!TextUtils.isEmpty(localFilePath)) {
-                Picasso.with(getContext().getApplicationContext()).load(new File(localFilePath)).
-                        resize((int) viewWidth, (int) viewHeight).centerCrop().into(contentView);
-            } else if (!TextUtils.isEmpty(message.getFileUrl())) {
-                Picasso.with(getContext().getApplicationContext()).load(message.getFileUrl()).
-                        resize((int) viewWidth, (int) viewHeight).centerCrop().into(contentView);
-            } else {
+            if (!TextUtils.isEmpty(message.getFileUrl())) {
+                if(message.getFileMetaData().get("format")!= null && message.getFileMetaData().get("format").toString().equals("image/bmp")) {
+                    Picasso.with(getContext().getApplicationContext())
+                            .load(message.getFileUrl()).into(contentView);
+                    Log.d("raz","in RightViewHolder");
+                }
+                else
+                    Picasso.with(getContext().getApplicationContext()).load(message.getFileUrl()).
+                            resize((int) viewWidth, (int) viewHeight).centerCrop().into(contentView);
+            } else if(!TextUtils.isEmpty(localFilePath)) {
+                if(localFilePath.substring(localFilePath.length()-3, localFilePath.length()).equals("bmp"))
+                    Picasso.with(getContext().getApplicationContext()).
+                            load(new File(localFilePath)).into(contentView);
+                else
+                    Picasso.with(getContext().getApplicationContext()).load(new File(localFilePath)).
+                            resize((int) viewWidth, (int) viewHeight).centerCrop().into(contentView);
+            } else
                 contentView.setImageResource(0);
-            }
 
             timeView.setText(time);
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/input_bar_layout_more"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:background="@color/lcim_divider_line_color"
+        android:focusable="false"/>
+
+    <LinearLayout
+        android:id="@+id/input_bar_layout_action"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:weightSum="4">
+
+        <TextView
+            android:id="@+id/input_bar_btn_picture"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:drawablePadding="10dp"
+            android:drawableTop="@drawable/lcim_bottom_bar_picture_button_bg"
+            android:gravity="center"
+            android:text="@string/lcim_chat_bottom_picture"/>
+
+        <TextView
+            android:id="@+id/input_bar_btn_stegano"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:drawablePadding="10dp"
+            android:drawableTop="@drawable/lcim_bottom_bar_stegano_button_bg"
+            android:gravity="center"
+            android:text="@string/lcim_chat_bottom_camera"/>
+    </LinearLayout>
+</LinearLayout>

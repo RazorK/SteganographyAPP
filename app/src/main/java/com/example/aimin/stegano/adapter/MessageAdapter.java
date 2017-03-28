@@ -42,12 +42,27 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void setMessageList(List<AVIMMessage> messages) {
         messageList.clear();
         if (null != messages) {
-            messageList.addAll(messages);
+            addMessageList(messages);
         }
     }
 
+    /**
+     * 添加坏消息过滤
+     * @param messages
+     */
     public void addMessageList(List<AVIMMessage> messages) {
-        messageList.addAll(0, messages);
+        int i=0;
+        for(AVIMMessage msg : messages){
+            if(msg instanceof AVIMImageMessage) {
+                AVIMImageMessage img = (AVIMImageMessage) msg;
+                if(!img.getFileMetaData().containsKey("format")) {
+                    continue;
+                }
+                messageList.addAll(i, Arrays.asList(msg));
+            } else
+                messageList.addAll(i, Arrays.asList(msg));
+            i++;
+        }
     }
 
     public void addMessage(AVIMMessage message) {

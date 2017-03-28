@@ -28,4 +28,12 @@
         completions."
     </string>
     <string name="message_is_null">消息不能为空</string>
+    
+    <!-- Strings related to Stegano -->
+    <string name="stegano_title">隐写插入</string>
+    <string name="stegano_hint">请选择隐写图片</string>
+
+    <!-- more action bar -->
+    <string name="lcim_chat_bottom_picture">照片</string>
+    <string name="lcim_chat_bottom_camera">隐写</string>
 </resources>

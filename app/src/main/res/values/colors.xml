@@ -10,4 +10,6 @@
     <color name="common_gray">#898989</color>
     <color name="common_white">#d4ffffff</color>
     <color name="common_black">#2c2c2c</color>
+    <color name="common_pale">#e3e3e3</color>
+    <color name="lcim_divider_line_color">#afafaf</color>
 </resources>

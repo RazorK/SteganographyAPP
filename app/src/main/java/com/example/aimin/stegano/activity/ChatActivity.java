@@ -35,6 +35,9 @@ public class ChatActivity extends BaseActivity {
     @Bind(R.id.toolbar)
     protected Toolbar toolbar;
 
+    @Bind(R.id.input_bar_layout_more)
+    protected View moreLayout;
+
     /**
      * 上一次点击 back 键的时间
      * 用于双击退出的判断
@@ -59,7 +62,7 @@ public class ChatActivity extends BaseActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                finish();
             }
         });
 
@@ -74,6 +77,14 @@ public class ChatActivity extends BaseActivity {
 
         //open the Conversation
         getConversation(memberId);
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(moreLayout.getVisibility() != View.GONE)
+            moreLayout.setVisibility(View.GONE);
+        else
+            super.onBackPressed();
     }
 
     /**

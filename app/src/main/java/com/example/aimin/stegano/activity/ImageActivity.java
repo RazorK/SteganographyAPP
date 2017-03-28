@@ -2,15 +2,13 @@ package com.example.aimin.stegano.activity;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
-import com.squareup.picasso.Picasso;
-
-import java.io.File;
+import com.example.aimin.stegano.stegano.ExtractProcess;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Created by aimin on 2017/3/26.
@@ -37,26 +35,37 @@ public class ImageActivity extends BaseActivity {
         double viewHeight = wm.getDefaultDisplay().getWidth()-100;
         double viewWidth = wm.getDefaultDisplay().getHeight()-100;
 
-        if (0 != actualHight && 0 != actualWidth) {
-            // 要保证图片的长宽比不变
-            double ratio = actualHight / actualWidth;
-            if (ratio > viewHeight / viewWidth) {
-                viewHeight = (actualHight > viewHeight ? viewHeight : actualHight);
-                viewWidth = viewHeight / ratio;
-            } else {
-                viewWidth = (actualWidth > viewWidth ? viewWidth : actualWidth);
-                viewHeight = viewWidth * ratio;
-            }
-        }
+        Constants.HW a = Constants.resize(actualHight,actualWidth,viewHeight,viewWidth);
+        viewHeight = a.height;
+        viewWidth = a.width;
 
 
-        if (TextUtils.isEmpty(localPath)) {
+        /*if (TextUtils.isEmpty(localPath)) {
             Picasso.with(this).load(fileUrl). resize((int) viewWidth, (int) viewHeight)
                     .centerCrop().into(imageView);
         } else {
             Picasso.with(this).load(new File(localPath)). resize((int) viewWidth, (int) viewHeight)
                     .centerCrop().into(imageView);
-        }
+        }*/
+
+        //change to AUIL
+        /*if(fileUrl.substring(fileUrl.length()-3, fileUrl.length()).equals("bmp"))
+            Picasso.with(this)
+                    .load(fileUrl).into(imageView);
+        else
+            Picasso.with(this).load(fileUrl). resize((int) viewWidth, (int) viewHeight)
+                    .centerCrop().into(imageView);*/
+
+        ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
+        /*imageLoader.loadImage(fileUrl, new SimpleImageLoadingListener() {
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                Log.d("raz","getloadedImage");
+                Log.d("raz",loadedImage.toString());
+            }
+        });*/
+        imageLoader.displayImage(fileUrl, imageView);
+        new ExtractProcess(this,fileUrl).LSBExtract();
 
     }
 }

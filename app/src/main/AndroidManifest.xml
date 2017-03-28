@@ -20,6 +20,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!-- Include following permission if you load images from Internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".LeanApplication"
         android:allowBackup="true"
@@ -68,6 +71,9 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity android:name=".activity.ImageActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".activity.SteganoActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

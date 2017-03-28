@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.aimin.stegano.R;
@@ -36,6 +37,20 @@ public class InputBar extends LinearLayout {
 
     private EditText contentView;
 
+    /**
+     * 底部拓展layout
+     */
+    private View moreActionView;
+
+    /**
+     * action layout
+     */
+    //private LinearLayout actionLayout;
+    private View stegenoBtn;
+    private View pictureBtn;
+
+
+
     public InputBar(Context context) {
         super(context);
         initView(context);
@@ -52,6 +67,10 @@ public class InputBar extends LinearLayout {
         sendTextBtn = (ImageButton) findViewById(R.id.input_bottom_bar_btn_send);
         contentView = (EditText) findViewById(R.id.input_bottom_bar_et_content);
         addPhotoBtn = (ImageButton) findViewById(R.id.input_bottom_bar_btn_add);
+
+        moreActionView = findViewById(R.id.input_bar_layout_more);
+        stegenoBtn = (TextView) findViewById(R.id.input_bar_btn_stegano);
+        pictureBtn = (TextView)findViewById(R.id.input_bar_btn_picture);
 
         setEditTextChangeListener();
 
@@ -81,12 +100,36 @@ public class InputBar extends LinearLayout {
         });
 
         /**
-         * 此处发送Add事件， 于ChatFragment中接受
+         * 显示翻转
          */
         addPhotoBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new InputBottomBarEvent(InputBottomBarEvent.INPUTBOTTOMBAR_ADD_ACTION, getTag()));
+                //EventBus.getDefault().post(new InputBottomBarEvent(InputBottomBarEvent.INPUTBOTTOMBAR_ADD_ACTION, getTag()));
+                boolean showActionView =
+                        (GONE == moreActionView.getVisibility() || GONE == moreActionView.getVisibility());
+                moreActionView.setVisibility(showActionView ? VISIBLE : GONE);
+                //LCIMSoftInputUtils.hideSoftInput(getContext(), contentEditText);
+            }
+        });
+
+        /**
+         * 发送事件，在chatfragment中接受
+         */
+        stegenoBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new InputBottomBarEvent(
+                        InputBottomBarEvent.INPUTBOTTOMBAR_STEGANO_ACTION, getTag()));
+            }
+        });
+
+        pictureBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("raz","Image Event Send");
+                EventBus.getDefault().post(new InputBottomBarEvent(
+                        InputBottomBarEvent.INPUTBOTTOMBAR_IMAGE_ACTION, getTag()));
             }
         });
     }

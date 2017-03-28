@@ -41,6 +41,11 @@ public class MessageHandler extends AVIMTypedMessageHandler<AVIMTypedMessage> {
         }
     }
 
+    /**
+     * chat fragment 中接受
+     * @param msg
+     * @param conv
+     */
     private void sendEvent(AVIMTypedMessage msg, AVIMConversation conv){
         TypedMessageEvent event = new TypedMessageEvent();
         event.message = msg;
