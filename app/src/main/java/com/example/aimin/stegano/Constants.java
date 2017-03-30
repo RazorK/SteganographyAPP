@@ -15,6 +15,9 @@ public class Constants {
     public static final String IMAGE_WIDTH = getPrefixConstant("image_width");
 
     public static final String STEGANO_SETIMAGE_PATH = getPrefixConstant("stegano_setimage_path");
+    public static final String STEGANO_MESSAGE = getPrefixConstant("stegano_message");
+
+    public static final String DATABASE_NAME  = "Stegano.db";
 
     private static String getPrefixConstant(String str) {
         return LEANMESSAGE_CONSTANTS_PREFIX + str;

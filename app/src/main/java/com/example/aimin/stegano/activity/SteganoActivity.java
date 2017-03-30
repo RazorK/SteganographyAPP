@@ -96,6 +96,7 @@ public class SteganoActivity extends BaseActivity {
                     setFilePath = stegano.LSBProcess();
                     Intent intent = new Intent();
                     intent.putExtra(Constants.STEGANO_SETIMAGE_PATH, setFilePath);
+                    intent.putExtra(Constants.STEGANO_MESSAGE,msg);
                     setResult(RESULT_OK, intent);
                     finish();
                 }
@@ -141,12 +142,6 @@ public class SteganoActivity extends BaseActivity {
         //container 背景
         container.setBackgroundColor(getResources().getColor(R.color.common_black));
 
-        /*BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        Bitmap bm = BitmapFactory.decodeFile(oriFilePath, options);
-
-        Constants.HW hw = Constants.resize(options.outHeight,options.outWidth,viewHeight,viewWidth);
-        toast(hw.height+"  "+hw.width);*/
         if(oriFilePath.substring(oriFilePath.length()-3, oriFilePath.length()).equals("bmp")) {
             Picasso.with(this).load(new File(oriFilePath)).into(imageView);
         } else {

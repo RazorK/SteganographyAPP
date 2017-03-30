@@ -17,9 +17,11 @@ import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.activity.ImageActivity;
+import com.example.aimin.stegano.stegano.ExtractProcess;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 import butterknife.Bind;
 
@@ -36,6 +38,9 @@ public class LeftImageViewHolder extends CommonViewHolder {
 
     @Bind(R.id.chat_left_text_tv_name)
     protected TextView nameView;
+
+    @Bind(R.id.chat_left_stegano_msg)
+    protected TextView steganoMsg;
 
     private static final int MAX_DEFAULT_HEIGHT = 400;
     private static final int MAX_DEFAULT_WIDTH = 300;
@@ -63,11 +68,9 @@ public class LeftImageViewHolder extends CommonViewHolder {
             Constants.HW hw = Constants.resize(actualHight, actualWidth, viewHeight,viewWidth);
             viewHeight = hw.height;
             viewWidth = hw.width;
-            Log.d("raz","in left"+viewHeight+"  "+viewWidth);
 
             if (!TextUtils.isEmpty(message.getFileUrl())) {
                 if (message.getFileMetaData().get("format").toString().equals("image/bmp")) {
-                    Log.d("raz", "in LeftViewHolder");
                     Picasso.with(getContext().getApplicationContext())
                             .load(message.getFileUrl()).into(contentView);
                 }
@@ -76,23 +79,18 @@ public class LeftImageViewHolder extends CommonViewHolder {
                             resize((int) viewWidth, (int) viewHeight).centerCrop().into(contentView);
             }
 
-            /*if (!TextUtils.isEmpty(localFilePath)) {
-                if(localFilePath.substring(localFilePath.length()-3, localFilePath.length()).equals("bmp"))
-                    Picasso.with(getContext().getApplicationContext()).
-                            load(new File(localFilePath)).into(contentView);
-                else
-                    Picasso.with(getContext().getApplicationContext()).load(new File(localFilePath)).
-                            resize((int) viewWidth, (int) viewHeight).centerCrop().into(contentView);
-            } else if (!TextUtils.isEmpty(message.getFileUrl())) {
-                if(message.getFileMetaData().get("format") == "image/bmp")
-                    Picasso.with(getContext().getApplicationContext())
-                            .load(message.getFileUrl()).into(contentView);
-                else
-                    Picasso.with(getContext().getApplicationContext()).load(message.getFileUrl()).
-                            resize((int) viewWidth, (int) viewHeight).centerCrop().into(contentView);
-            } else {
-                contentView.setImageResource(0);
-            }*/
+            //Extract
+            Map<String, Object> metaData = message.getAttrs();
+            if(metaData!= null){
+                if(metaData.containsKey("stegano")){
+                    Log.d("raz judge",(boolean)metaData.get("stegano")+"");
+                    if((boolean)metaData.get("stegano")){
+                        ExtractProcess ext = new ExtractProcess(getContext(), message.getFileUrl());
+                        steganoMsg.setText(ext.LSBExtract());
+                        steganoMsg.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
 
             timeView.setText(time);
 

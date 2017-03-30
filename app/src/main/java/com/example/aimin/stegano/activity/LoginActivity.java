@@ -1,7 +1,9 @@
 package com.example.aimin.stegano.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +15,7 @@ import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.AVIMException;
 import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
 import com.example.aimin.stegano.ClientManager;
+import com.example.aimin.stegano.DBConsult;
 import com.example.aimin.stegano.R;
 
 import butterknife.Bind;
@@ -37,6 +40,12 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
+        Cursor userList = new DBConsult(this).getAllLoginedUser();
+
+        //TODO: add cache user list
+        while(userList.moveToNext()){
+            Log.d("raz Logined",userList.getString(userList.getColumnIndex("username")));
+        }
     }
 
     @OnClick(R.id.login_btnLogin)
@@ -50,14 +59,17 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void attemptLogin() {
-        String username = loginEditView.getText().toString().trim();
+        final String username = loginEditView.getText().toString().trim();
         String password = pwdEditView.getText().toString().trim();
         AVUser.logInInBackground(username, password, new LogInCallback<AVUser>() {
             @Override
             public void done(AVUser avUser, AVException e) {
                 if (e == null) {
+                    String id = avUser.getObjectId();
+                    //add in DB
+                    new DBConsult(LoginActivity.this).tryAddLoginedUser(id,username);
                     //IMClient OPEN
-                    ClientManager.getInstance().open(avUser.getObjectId().toString(), new AVIMClientCallback() {
+                    ClientManager.getInstance().open(id, new AVIMClientCallback() {
                         @Override
                         public void done(AVIMClient avimClient, AVIMException e) {
                             if(filterException(e)){

@@ -47,12 +47,25 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:paddingLeft="40dp">
-            <ImageView
-                android:id="@+id/chat_right_image_content"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/chat_right_item_bg"
-                android:src="@null"/>
+                android:orientation="vertical"
+                android:background="@drawable/chat_right_item_bg">
+                <ImageView
+                    android:id="@+id/chat_right_image_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@null"/>
+                <TextView
+                    android:id="@+id/chat_right_stegano_msg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:textColor="@android:color/white"
+                    android:visibility="gone"
+                    />
+            </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
 

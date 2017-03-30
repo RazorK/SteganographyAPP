@@ -18,12 +18,15 @@ import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.example.aimin.stegano.Constants;
+import com.example.aimin.stegano.DBConsult;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.activity.ImageActivity;
+import com.example.aimin.stegano.stegano.ExtractProcess;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 import butterknife.Bind;
 
@@ -49,6 +52,9 @@ public class RightImageViewHolder extends CommonViewHolder {
 
     @Bind(R.id.chat_right_text_tv_error)
     protected ImageView errorView;
+
+    @Bind(R.id.chat_right_stegano_msg)
+    protected TextView steganoMsg;
 
     private static final int MAX_DEFAULT_HEIGHT = 400;
     private static final int MAX_DEFAULT_WIDTH = 300;
@@ -76,6 +82,7 @@ public class RightImageViewHolder extends CommonViewHolder {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String time = dateFormat.format(message.getTimestamp());
             String localFilePath = message.getLocalFilePath();
+            Log.d("raz", "in raz getlocalFilePath"+localFilePath);
 
             // 图片的真实高度与宽度
             double actualHight = message.getHeight();
@@ -87,13 +94,29 @@ public class RightImageViewHolder extends CommonViewHolder {
             Constants.HW hw = Constants.resize(actualHight, actualWidth, viewHeight,viewWidth);
             viewHeight = hw.height;
             viewWidth = hw.width;
-            Log.d("raz","in right"+viewHeight+"  "+viewWidth);
+
+            Map<String, Object> metaData = message.getAttrs();
+            if(metaData!=null && metaData.containsKey("stegano") && (boolean)metaData.get("stegano")) {
+                if (metaData.containsKey("steganoId") && !metaData.get("steganoId").toString().equals("")) {
+                    String sid = metaData.get("steganoId").toString();
+                    String msg = new DBConsult(getContext()).getSteganoMsgBySteganoId(sid);
+                    if (!msg.equals("")) {
+                        steganoMsg.setText(msg);
+                        steganoMsg.setVisibility(View.VISIBLE);
+                    } else {
+                        steganoMsg.setText(getExtractMsg(message.getFileUrl()));
+                        steganoMsg.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    steganoMsg.setText(getExtractMsg(message.getFileUrl()));
+                    steganoMsg.setVisibility(View.VISIBLE);
+                }
+            }
 
             if (!TextUtils.isEmpty(message.getFileUrl())) {
                 if(message.getFileMetaData().get("format")!= null && message.getFileMetaData().get("format").toString().equals("image/bmp")) {
                     Picasso.with(getContext().getApplicationContext())
                             .load(message.getFileUrl()).into(contentView);
-                    Log.d("raz","in RightViewHolder");
                 }
                 else
                     Picasso.with(getContext().getApplicationContext()).load(message.getFileUrl()).
@@ -153,5 +176,11 @@ public class RightImageViewHolder extends CommonViewHolder {
 
     public void showTimeView(boolean isShow) {
         timeView.setVisibility(isShow ? View.VISIBLE : View.GONE);
+    }
+
+    private String getExtractMsg(String url){
+        //TODO： 存入数据库
+        ExtractProcess ext = new ExtractProcess(getContext(), message.getFileUrl());
+        return ext.LSBExtract();
     }
 }
