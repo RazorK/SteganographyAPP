@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
@@ -95,21 +96,36 @@ public class RightImageViewHolder extends CommonViewHolder {
             viewHeight = hw.height;
             viewWidth = hw.width;
 
+            //获取MSG
+            //情形1:发送传来msg 无leanid/imagurl
+            //情形2:刷新从前的消息，包含(leanid/imageurl)
+            //情形3:异地登陆，无法找到相关数据库
+            //TODO: 加入Userid检测
+            //TODO： 加入完备储存
             Map<String, Object> metaData = message.getAttrs();
             if(metaData!=null && metaData.containsKey("stegano") && (boolean)metaData.get("stegano")) {
                 if (metaData.containsKey("steganoId") && !metaData.get("steganoId").toString().equals("")) {
+
                     String sid = metaData.get("steganoId").toString();
+
+                    //获取数据库中信息
                     String msg = new DBConsult(getContext()).getSteganoMsgBySteganoId(sid);
+
+                    //没查到或者没有记录，都要保存
                     if (!msg.equals("")) {
+                        //TODO：不确定要不要保存url/leanid
                         steganoMsg.setText(msg);
                         steganoMsg.setVisibility(View.VISIBLE);
                     } else {
-                        steganoMsg.setText(getExtractMsg(message.getFileUrl()));
+                        //todo:保存信息
+                        String steMsg = getExtractMsg(message.getFileUrl());
+                        steganoMsg.setText(steMsg);
+
+                        //TODO：先做数据缓存，之后做图片缓存
+                        bindSteganoMsg(sid,steMsg,Constants.getCachePath(getContext(),AVUser.getCurrentUser().getObjectId(),sid),message.getConversationId(),
+                                message.getMessageId(),message.getFileUrl());
                         steganoMsg.setVisibility(View.VISIBLE);
                     }
-                } else {
-                    steganoMsg.setText(getExtractMsg(message.getFileUrl()));
-                    steganoMsg.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -180,7 +196,15 @@ public class RightImageViewHolder extends CommonViewHolder {
 
     private String getExtractMsg(String url){
         //TODO： 存入数据库
-        ExtractProcess ext = new ExtractProcess(getContext(), message.getFileUrl());
+        ExtractProcess ext = new ExtractProcess(getContext(), message.getFileUrl(),steganoMsg);
+        steganoMsg.setVisibility(View.VISIBLE);
         return ext.LSBExtract();
+    }
+
+    //完备bind函数，包含全部信息
+    private void bindSteganoMsg(String steganoId, String msg, String cachePath,
+                                    String conversationId,String leanId, String imageurl) {
+        String userId = AVUser.getCurrentUser().getObjectId();
+        new DBConsult(getContext()).fullBindSteganoMsg(steganoId,msg,cachePath, userId,conversationId,leanId,imageurl);
     }
 }

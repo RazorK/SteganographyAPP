@@ -81,12 +81,16 @@ public class LeftImageViewHolder extends CommonViewHolder {
 
             //Extract
             Map<String, Object> metaData = message.getAttrs();
+            Log.d("raz","Iamhere");
             if(metaData!= null){
                 if(metaData.containsKey("stegano")){
                     Log.d("raz judge",(boolean)metaData.get("stegano")+"");
                     if((boolean)metaData.get("stegano")){
-                        ExtractProcess ext = new ExtractProcess(getContext(), message.getFileUrl());
-                        steganoMsg.setText(ext.LSBExtract());
+                        ExtractProcess ext = new ExtractProcess(getContext(), message.getFileUrl(),steganoMsg);
+                        //steganoMsg.setText(ext.LSBExtract());
+                        ext.LSBExtract();
+                        /*Log.d("raz ext",ext.msg);
+                        steganoMsg.setText(ext.msg);*/
                         steganoMsg.setVisibility(View.VISIBLE);
                     }
                 }

@@ -7,7 +7,6 @@ import android.widget.ImageView;
 
 import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
-import com.example.aimin.stegano.stegano.ExtractProcess;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
@@ -65,7 +64,7 @@ public class ImageActivity extends BaseActivity {
             }
         });*/
         imageLoader.displayImage(fileUrl, imageView);
-        new ExtractProcess(this,fileUrl).LSBExtract();
+        //new ExtractProcess(this,fileUrl).LSBExtract();
 
     }
 }

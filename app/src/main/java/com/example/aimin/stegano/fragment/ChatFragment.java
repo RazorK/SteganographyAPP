@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.im.v2.AVIMConversation;
 import com.avos.avoscloud.im.v2.AVIMException;
@@ -38,8 +39,6 @@ import com.example.aimin.stegano.event.TypedMessageEvent;
 import com.example.aimin.stegano.layout.InputBar;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,12 +145,21 @@ public class ChatFragment extends Fragment {
                 case REQUEST_STEGANO_INSERT:
                     String path = data.getStringExtra(Constants.STEGANO_SETIMAGE_PATH);
                     String msg = data.getStringExtra(Constants.STEGANO_MESSAGE);
+                    String sid = data.getStringExtra(Constants.STEGANO_ID);
                     Log.d("raz","get set Picture location" + path);
-                    sendImage(path, true, msg);
+                    //TODO: 数据库存储放在这
+                    saveSteganoResult(path,msg,sid);
+                    sendImage(path, true, sid);
                 default:
                     break;
             }
         }
+    }
+
+    private void saveSteganoResult(String path, String message, String sid) {
+        String userId = AVUser.getCurrentUser().getObjectId();
+        String converId = mConversation.getConversationId();
+        new DBConsult(getActivity()).bindSteganoMsg(path,message,sid,userId,converId);
     }
 
     public void setConversation(AVIMConversation conversation) {
@@ -202,21 +210,13 @@ public class ChatFragment extends Fragment {
      *
      * @param imagePath
      */
-    protected void sendImage(String imagePath, boolean stegano, String message) {
+    protected void sendImage(String imagePath, boolean stegano, String steganoId) {
         try {
             AVIMImageMessage picture = new AVIMImageMessage(imagePath);
             Map< String, Object > attributes = new HashMap< String, Object >();
             attributes.put("stegano", stegano);
-            picture.setAttrs(attributes);
-
-            //get SteganoId by time
-            SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMddHHmmss");
-            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-            String str = formatter.format(curDate);
-
-            String steganoId = str;
             attributes.put("steganoId", steganoId);
-            new DBConsult(getActivity()).bindSteganoMsg(null, message, steganoId);
+            picture.setAttrs(attributes);
             sendMessage(picture);
         } catch (IOException e) {
             Log.e("raz image send error",e.getMessage());

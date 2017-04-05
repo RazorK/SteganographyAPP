@@ -40,6 +40,10 @@
             android:layout_height="wrap_content"
             android:scaleType="centerInside"
             android:src="@null"/>
+        <TextView
+            android:id="@+id/stegano_hint_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"

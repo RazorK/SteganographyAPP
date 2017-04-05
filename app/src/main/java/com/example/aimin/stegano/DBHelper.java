@@ -11,6 +11,10 @@ import android.widget.Toast;
 
 public class DBHelper extends SQLiteOpenHelper {
 
+    //steganomsg type
+    private static final int STEGANO_SEND_MESSAGE = 0;
+    private static final int STEGANO_RECEIVE_MESSAGE = 1;
+
     public static final String CREATE_BOOK = "create table user ("
             + "id integer primary key autoincrement, "
             + "leanid text, "
@@ -18,10 +22,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_MESSAGE = "create table steganomsg ("
             + "id integer primary key autoincrement, "
+            + "userid text,"
+            + "conversationid text, "
             + "leanid text, "
-            + "steganoid text,"
-            + "imageUrl text,"
-            + "steganomsg text,"
+            + "steganoid text, "
+            + "imageUrl text, "
+            + "steganomsg text, "
+            + "type int, "
             + "imagecachepath text)";
 
     private Context mContext;

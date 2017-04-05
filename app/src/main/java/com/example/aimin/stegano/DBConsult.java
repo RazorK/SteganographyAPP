@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+
 /**
  * Created by aimin on 2017/3/29.
  * 提供处理数据库的接口
@@ -53,17 +54,31 @@ public class DBConsult {
 
     /**
      * 绑定SteganoMsg与图片储存位置
-     * @param leanId
+     * 用于ChatFragment中
      * @param msg
      * @param steganoId
      */
-    public void bindSteganoMsg(String leanId, String msg, String steganoId){
-        //String [] ids = {leanId};
+    public void bindSteganoMsg(String cachePath, String msg, String steganoId, String userId, String conversationId){
         ContentValues values = new ContentValues();
-        if(leanId!=null)
-            values.put("leanid",leanId);
+        values.put("imagecachepath",cachePath);
+        values.put("userid",userId);
+        values.put("conversationid",conversationId);
         values.put("steganomsg", msg);
         values.put("steganoid",steganoId);
+        db.insert("steganomsg",null,values);
+        Log.d("raz","in addSteganoMsg, after insert");
+        values.clear();
+    }
+
+    public void fullBindSteganoMsg(String steganoId, String msg, String cachePath, String userId, String conversationId, String leanId, String imageUrl){
+        ContentValues values = new ContentValues();
+        values.put("imagecachepath",cachePath);
+        values.put("userid",userId);
+        values.put("conversationid",conversationId);
+        values.put("steganomsg", msg);
+        values.put("steganoid",steganoId);
+        values.put("leanid",leanId);
+        values.put("imagecachepath",imageUrl);
         db.insert("steganomsg",null,values);
         Log.d("raz","in addSteganoMsg, after insert");
         values.clear();

@@ -4,23 +4,32 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.avos.avoscloud.AVUser;
 import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.stegano.SteganoProcess;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.Bind;
 
@@ -53,8 +62,13 @@ public class SteganoActivity extends BaseActivity {
     @Bind(R.id.stegano_image_button)
     protected ImageButton sendButton;
 
+    @Bind(R.id.stegano_hint_text)
+    protected TextView hint;
+
     private String oriFilePath;
     private String setFilePath;
+
+    private double simpleSize = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,11 +106,25 @@ public class SteganoActivity extends BaseActivity {
             public void onClick(View v) {
                 String msg = editText.getText().toString().trim();
                 if(!TextUtils.isEmpty(msg)){
-                    SteganoProcess stegano = new SteganoProcess(SteganoActivity.this,oriFilePath,msg);
-                    setFilePath = stegano.LSBProcess();
+                    String sid = getSteganoId();
+                    SteganoProcess stegano = null;
+                    Constants.createCacheFolder(SteganoActivity.this, AVUser.getCurrentUser().getObjectId());
+                    setFilePath = Constants.getCachePath(SteganoActivity.this,AVUser.getCurrentUser().getObjectId(),sid);
+                    try {
+                        stegano = new SteganoProcess(SteganoActivity.this,oriFilePath,msg,sid,simpleSize);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        stegano.LSBProcess();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Intent intent = new Intent();
                     intent.putExtra(Constants.STEGANO_SETIMAGE_PATH, setFilePath);
                     intent.putExtra(Constants.STEGANO_MESSAGE,msg);
+                    intent.putExtra(Constants.STEGANO_ID,sid);
                     setResult(RESULT_OK, intent);
                     finish();
                 }
@@ -111,11 +139,8 @@ public class SteganoActivity extends BaseActivity {
             switch (requestCode) {
                 case REQUEST_IMAGE_PICK:
                     oriFilePath = getRealPathFromURI(this, data.getData());
-                    if(TextUtils.isEmpty(oriFilePath)){
-                        toast("something bad");
-                    } else {
-                        toast(oriFilePath);
-                    }
+                    //TODO: cut picture size
+                    getSimpleSize();
                     hintLayout.setVisibility(View.GONE);
                     setImageView(oriFilePath);
                     setTextEnable(true);
@@ -123,6 +148,17 @@ public class SteganoActivity extends BaseActivity {
                     break;
             }
         }
+    }
+
+    /**
+     * 用于根据时间生成SteganoId
+     * @return
+     */
+    private String getSteganoId(){
+        //get SteganoId by time
+        SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMddHHmmss");
+        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+        return formatter.format(curDate);
     }
 
     private void setTextEnable(boolean flag) {
@@ -159,6 +195,7 @@ public class SteganoActivity extends BaseActivity {
      */
     private String getRealPathFromURI(Context context, Uri contentUri) {
         if (contentUri.getScheme().equals("file")) {
+            Log.d("raz","1in ChatFragment getRealpath "+ contentUri.getEncodedPath());
             return contentUri.getEncodedPath();
         } else {
             Cursor cursor = null;
@@ -178,5 +215,19 @@ public class SteganoActivity extends BaseActivity {
                 }
             }
         }
+    }
+
+    private double getSimpleSize(){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        Bitmap bmp = BitmapFactory.decodeFile(oriFilePath, options);
+        if(options.outHeight>options.outWidth){
+            simpleSize = options.outHeight/960;
+        } else
+            simpleSize = options.outWidth/960;
+        if(simpleSize<1)
+            simpleSize = 1;
+        hint.setText("resize Picture size "+simpleSize);
+        return simpleSize;
     }
 }

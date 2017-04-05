@@ -1,5 +1,9 @@
 package com.example.aimin.stegano;
 
+import android.content.Context;
+
+import java.io.File;
+
 /**
  * Created by aimin on 2017/3/25.
  */
@@ -16,6 +20,7 @@ public class Constants {
 
     public static final String STEGANO_SETIMAGE_PATH = getPrefixConstant("stegano_setimage_path");
     public static final String STEGANO_MESSAGE = getPrefixConstant("stegano_message");
+    public static final String STEGANO_ID = getPrefixConstant("stegano_id");
 
     public static final String DATABASE_NAME  = "Stegano.db";
 
@@ -46,6 +51,20 @@ public class Constants {
         public HW(double h, double w){
             this.height = h;
             this.width = w;
+        }
+    }
+
+    //设置隐写图像解析时缓存地址
+    public static String getCachePath(Context activity , String userId, String steganoId){
+        String fileDir = activity.getFilesDir().toString();
+        return fileDir+"/"+userId+"/"+steganoId;
+    }
+
+    public static void createCacheFolder(Context activity , String userId){
+        String fileDir = activity.getFilesDir().toString();
+        File folder = new File(fileDir+"/"+userId);
+        if(!folder.exists()){
+            folder.mkdirs();
         }
     }
 }

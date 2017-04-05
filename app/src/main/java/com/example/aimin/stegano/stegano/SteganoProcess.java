@@ -1,13 +1,18 @@
 package com.example.aimin.stegano.stegano;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.avos.avoscloud.AVUser;
+import com.example.aimin.stegano.Constants;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by aimin on 2017/3/27.
@@ -33,65 +38,50 @@ public class SteganoProcess extends BaseProcess {
     private File inFile;
     private File outFile;
 
-    public SteganoProcess(Context context, String path, String insertMessage) {
+    private String steganoId;
+
+    private double simpleSize;
+
+    public SteganoProcess(Context context, String path, String insertMessage, String sid, double simplesize) throws FileNotFoundException {
         this.context = context;
         this.oriFilePath = path;
         this.inFile = new File(path);
         this.msg = insertMessage;
+        this.steganoId = sid;
+        this.simpleSize = simplesize;
+
+        //outfile
+        this.outFilePath = Constants.getCachePath(context, AVUser.getCurrentUser().getObjectId(),this.steganoId);
+        this.outFile = new File(outFilePath);
+        this.out = new FileOutputStream(outFile);
     }
 
     public String getResultPath(){
         return outFilePath;
     }
 
-    public String LSBProcess() {
-        char[] charArray = msg.toCharArray();
-        try {
-            in = new FileInputStream(inFile);
-            SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMddHHmmss");
-            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-            String str = formatter.format(curDate);
-            out = context.openFileOutput(str+".bmp",Context.MODE_PRIVATE);
-            outFilePath = context.getFilesDir()+"/"+str+".bmp";
-            toast(outFilePath);
-
-
-            int temp=in.read();
-            int i,j,k,asc,flag,inserter = 0;
-            flag = 0;
-            k = 0;
-
-            while(temp!=-1){
-                if(flag == 0 && k >= 54)//前53个字节跳过
-                //if(flag==0)
-                {
-
-                    for(j=0;j<charArray.length;j++)
-                    {
-                        if(charArray[j]=='$')
-                        {
-                            flag=1;
-                        }
-                        for(i=0;i<8;i++)
-                        {
-                            inserter=(charArray[j]>>(7-i)&0x01);
-                            temp=inserter+(temp&0xfe);
-                            //Log.d("raz",temp+"");
-                            out.write(temp);
-                            temp=in.read();
-                            k++;
-                        }
-                    }
-                } else
-                {
-                    out.write(temp);
-                    k++;
-                    temp=in.read();
-                }
+    public void LSBProcess() throws IOException {
+        msg = msg + "$";
+        Log.d("raz","stegano Path"+oriFilePath);
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inSampleSize = (int)simpleSize;
+        Bitmap bm = BitmapFactory.decodeFile(oriFilePath,bitmapOptions).copy(Bitmap.Config.ARGB_8888,true);
+        PixelHelper ph = new PixelHelper(bm.getHeight(),bm.getWidth());
+        Log.d("raz","getFirstPixel"+bm.getPixel(0,0));
+        Log.d("raz","setMsg"+msg);
+        char [] c = msg.toCharArray();
+        Log.d("raz","setMsgLength"+c.length);
+        for(int i=0;i<c.length;i++){
+            for(int j=0;j<16;j++){
+                int getbit=(c[i]>>(15-j)&0x0001);
+                int temp = bm.getPixel(ph.getNowWidth(),ph.getNowHeight());
+                Log.d("raz","before"+temp);
+                temp = (temp & 0xfffffffe) + getbit;
+                Log.d("raz","after"+temp);
+                bm.setPixel(ph.getNowWidth(),ph.getNowHeight(),temp);
+                ph.next();
             }
-        } catch(IOException e){
-            e.printStackTrace();
         }
-        return getResultPath();
+        bm.compress(Bitmap.CompressFormat.PNG,100,out);
     }
 }
