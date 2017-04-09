@@ -1,4 +1,4 @@
-package com.example.aimin.stegano;
+package com.example.aimin.stegano.manager;
 
 import android.text.TextUtils;
 
@@ -29,6 +29,11 @@ public class ClientManager {
         this.clientId = clientId;
         avimClient = AVIMClient.getInstance(clientId);
         avimClient.open(callback);
+    }
+
+    public void close(AVIMClientCallback callback){
+        imClientManager = null;
+        avimClient.close(callback);
     }
 
     public AVIMClient getClient() {

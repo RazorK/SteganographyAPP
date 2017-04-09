@@ -14,7 +14,7 @@ import com.avos.avoscloud.im.v2.AVIMConversationQuery;
 import com.avos.avoscloud.im.v2.AVIMException;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCreatedCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationQueryCallback;
-import com.example.aimin.stegano.ClientManager;
+import com.example.aimin.stegano.manager.ClientManager;
 import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.fragment.ChatFragment;

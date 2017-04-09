@@ -16,11 +16,18 @@ import android.view.MenuItem;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVRelation;
+import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.im.v2.AVIMClient;
+import com.avos.avoscloud.im.v2.AVIMException;
+import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
 import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.adapter.FriendAdapter;
 import com.example.aimin.stegano.event.FriendClickEvent;
+import com.example.aimin.stegano.manager.ActivityManager;
+import com.example.aimin.stegano.manager.ClientManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +85,8 @@ public class MainActivity extends BaseActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            logout();
+            ActivityManager.getInstance().exit();
             super.onBackPressed();
         }
     }
@@ -97,7 +106,15 @@ public class MainActivity extends BaseActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            ClientManager.getInstance().close(new AVIMClientCallback() {
+                @Override
+                public void done(AVIMClient avimClient, AVIMException e) {
+                    filterException(e);
+                }
+            });
+            AVUser.getCurrentUser().logOut();
+            this.finish();
             return true;
         }
 
@@ -131,16 +148,14 @@ public class MainActivity extends BaseActivity
 
     private void initData(){
         mList.clear();
-        AVQuery<AVObject> avQuery = new AVQuery<>("_User");
-        avQuery.orderByDescending("createdAt");
-        avQuery.findInBackground(new FindCallback<AVObject>() {
+        AVRelation<AVObject> relation = AVUser.getCurrentUser().getRelation("friends");
+        AVQuery<AVObject> query = relation.getQuery();
+        query.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> list, AVException e) {
-                if (e == null) {
+                if(filterException(e)){
                     mList.addAll(list);
                     friendAdapter.notifyDataSetChanged();
-                } else {
-                    e.printStackTrace();
                 }
             }
         });
@@ -155,5 +170,18 @@ public class MainActivity extends BaseActivity
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra(Constants.MEMBER_ID, event.targetID);
         startActivity(intent);
+    }
+
+    /**
+     * 登出client storage
+     */
+    private void logout(){
+        ClientManager.getInstance().close(new AVIMClientCallback() {
+            @Override
+            public void done(AVIMClient avimClient, AVIMException e) {
+                filterException(e);
+            }
+        });
+        AVUser.getCurrentUser().logOut();
     }
 }

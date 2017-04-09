@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.aimin.stegano.Constants;
-import com.example.aimin.stegano.DBHelper;
+import com.example.aimin.stegano.db.DBHelper;
 import com.example.aimin.stegano.R;
 
 import butterknife.Bind;

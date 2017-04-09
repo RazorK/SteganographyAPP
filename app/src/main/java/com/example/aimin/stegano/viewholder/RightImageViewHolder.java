@@ -19,7 +19,7 @@ import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.example.aimin.stegano.Constants;
-import com.example.aimin.stegano.DBConsult;
+import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.activity.ImageActivity;
 import com.example.aimin.stegano.stegano.ExtractProcess;

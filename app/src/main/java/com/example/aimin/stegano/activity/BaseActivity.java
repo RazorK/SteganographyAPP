@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.aimin.stegano.event.EmptyEvent;
+import com.example.aimin.stegano.manager.ActivityManager;
 
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
@@ -21,6 +22,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActivityManager.getInstance().addActivity(this);
         super.onCreate(savedInstanceState);
     }
 

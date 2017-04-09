@@ -9,13 +9,17 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVRelation;
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.AVIMException;
 import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
-import com.example.aimin.stegano.ClientManager;
-import com.example.aimin.stegano.DBConsult;
+import com.example.aimin.stegano.manager.ClientManager;
+import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.R;
 
 import butterknife.Bind;
@@ -63,9 +67,22 @@ public class LoginActivity extends BaseActivity {
         String password = pwdEditView.getText().toString().trim();
         AVUser.logInInBackground(username, password, new LogInCallback<AVUser>() {
             @Override
-            public void done(AVUser avUser, AVException e) {
+            public void done(final AVUser avUser, AVException e) {
                 if (e == null) {
                     String id = avUser.getObjectId();
+                    //TODO: add default user
+                    Log.d("raz","Login&&getNowUserId"+avUser.getObjectId());
+                    if(!avUser.getObjectId().equals("58e9a6bd61ff4b00619f9124")){
+                        AVQuery<AVUser> userQuery = new AVQuery<>("_User");
+                        userQuery.getInBackground("58e9a6bd61ff4b00619f9124", new GetCallback<AVUser>() {
+                            @Override
+                            public void done(AVUser defaultUser, AVException e) {
+                                AVRelation<AVObject> relation = avUser.getRelation("friends");
+                                relation.add(defaultUser);
+                                avUser.saveInBackground();
+                            }
+                        });
+                    }
                     //add in DB
                     new DBConsult(LoginActivity.this).tryAddLoginedUser(id,username);
                     //IMClient OPEN
@@ -73,7 +90,7 @@ public class LoginActivity extends BaseActivity {
                         @Override
                         public void done(AVIMClient avimClient, AVIMException e) {
                             if(filterException(e)){
-                                LoginActivity.this.finish();
+                                //LoginActivity.this.finish();
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             }
                         }

@@ -7,6 +7,7 @@ import com.avos.avoscloud.im.v2.AVIMConversation;
 import com.avos.avoscloud.im.v2.AVIMTypedMessage;
 import com.avos.avoscloud.im.v2.AVIMTypedMessageHandler;
 import com.example.aimin.stegano.event.TypedMessageEvent;
+import com.example.aimin.stegano.manager.ClientManager;
 
 import de.greenrobot.event.EventBus;
 

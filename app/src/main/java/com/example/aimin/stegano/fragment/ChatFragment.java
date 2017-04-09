@@ -29,7 +29,7 @@ import com.avos.avoscloud.im.v2.callback.AVIMMessagesQueryCallback;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMTextMessage;
 import com.example.aimin.stegano.Constants;
-import com.example.aimin.stegano.DBConsult;
+import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.activity.SteganoActivity;
 import com.example.aimin.stegano.adapter.MessageAdapter;

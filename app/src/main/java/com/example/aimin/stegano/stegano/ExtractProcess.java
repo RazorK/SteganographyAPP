@@ -55,9 +55,9 @@ public class ExtractProcess extends BaseProcess {
                     }
                     tempchar=(char)key;
                     msg=msg+tempchar;
-                    if(msg.length()>=50){
+                    /*if(msg.length()>=50){
                         flag = false;
-                    }
+                    }*/
                     Log.d("raz","nowMsg"+msg);
                 } while (tempchar!='$' && flag);
                 Log.d("raz",msg);

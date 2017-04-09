@@ -178,6 +178,7 @@ public class SteganoActivity extends BaseActivity {
         //container 背景
         container.setBackgroundColor(getResources().getColor(R.color.common_black));
 
+        Log.d("raz","in setImageView"+oriFilePath);
         if(oriFilePath.substring(oriFilePath.length()-3, oriFilePath.length()).equals("bmp")) {
             Picasso.with(this).load(new File(oriFilePath)).into(imageView);
         } else {

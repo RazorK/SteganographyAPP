@@ -1,10 +1,12 @@
-package com.example.aimin.stegano;
+package com.example.aimin.stegano.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import com.example.aimin.stegano.Constants;
 
 
 /**

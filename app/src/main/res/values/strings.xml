@@ -4,7 +4,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="main_login_btn_string">Login</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_logout">注销</string>
 
     <!-- login -->
     <string name="idtxthint">用户名</string>

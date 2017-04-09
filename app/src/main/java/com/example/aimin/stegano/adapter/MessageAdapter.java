@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMTextMessage;
-import com.example.aimin.stegano.ClientManager;
+import com.example.aimin.stegano.manager.ClientManager;
 import com.example.aimin.stegano.viewholder.CommonViewHolder;
 import com.example.aimin.stegano.viewholder.LeftImageViewHolder;
 import com.example.aimin.stegano.viewholder.LeftMessageViewHolder;

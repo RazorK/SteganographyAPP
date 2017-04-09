@@ -1,4 +1,4 @@
-package com.example.aimin.stegano;
+package com.example.aimin.stegano.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
