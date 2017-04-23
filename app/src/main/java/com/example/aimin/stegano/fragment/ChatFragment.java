@@ -29,12 +29,13 @@ import com.avos.avoscloud.im.v2.callback.AVIMMessagesQueryCallback;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMTextMessage;
 import com.example.aimin.stegano.Constants;
-import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.activity.SteganoActivity;
 import com.example.aimin.stegano.adapter.MessageAdapter;
+import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.event.InputBottomBarEvent;
 import com.example.aimin.stegano.event.InputBottomBarTextEvent;
+import com.example.aimin.stegano.event.RefreshConversationListEvent;
 import com.example.aimin.stegano.event.TypedMessageEvent;
 import com.example.aimin.stegano.layout.InputBar;
 
@@ -218,6 +219,7 @@ public class ChatFragment extends Fragment {
             attributes.put("steganoId", steganoId);
             picture.setAttrs(attributes);
             sendMessage(picture);
+            EventBus.getDefault().post(new RefreshConversationListEvent());
         } catch (IOException e) {
             Log.e("raz image send error",e.getMessage());
         }

@@ -2,14 +2,25 @@ package com.example.aimin.stegano.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
 import com.example.aimin.stegano.R;
+import com.example.aimin.stegano.model.ContactItem;
 import com.example.aimin.stegano.viewholder.FriendViewHolder;
+import com.github.stuxuhai.jpinyin.PinyinFormat;
+import com.github.stuxuhai.jpinyin.PinyinHelper;
 
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by aimin on 2017/3/25.
@@ -17,16 +28,46 @@ import java.util.List;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendViewHolder> {
     private Context mContext;
-    private List<AVObject> mList;
+    private List<ContactItem> mList;
 
-    public FriendAdapter(List<AVObject> list, Context context) {
+    /**
+     * 在有序 memberList 中 MemberItem.sortContent 第一次出现时的字母与位置的 map
+     */
+    private Map<Character, Integer> indexMap = new HashMap<Character, Integer>();
+
+    /**
+     * 简体中文的 Collator
+     */
+    Collator cmp = Collator.getInstance(Locale.SIMPLIFIED_CHINESE);
+
+    /**
+     * 设置成员列表，然后更新索引
+     * 此处会对数据以 空格、数字、字母（汉字转化为拼音后的字母） 的顺序进行重新排列
+     */
+    public void setUserList(List<AVUser> list) {
+        List<ContactItem> contactList = new ArrayList<>();
+        if (null != list) {
+            for (AVUser user : list) {
+                ContactItem item = new ContactItem();
+                item.user = user;
+                item.sortContent = PinyinHelper.convertToPinyinString(user.getUsername(), "", PinyinFormat.WITHOUT_TONE);
+                contactList.add(item);
+            }
+        }
+        Collections.sort(contactList, new SortChineseName());
+        indexMap = updateIndex(contactList);
+        updateInitialsVisible(contactList);
+        setDataList(contactList);
+    }
+
+    public FriendAdapter(Context context) {
         this.mContext = context;
-        this.mList = list;
+        mList = new ArrayList<>();
     }
 
     @Override
     public FriendViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new FriendViewHolder(LayoutInflater.from(mContext).inflate(R.layout.friend_list_item, parent, false),mContext);
+        return new FriendViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_friend_list, parent, false),mContext);
     }
 
     @Override
@@ -37,5 +78,75 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendViewHolder> {
     @Override
     public int getItemCount() {
         return mList.size();
+    }
+
+    /**
+     * 更新索引 Map
+     */
+    private Map<Character, Integer> updateIndex(List<ContactItem> list) {
+        Character lastCharcter = '#';
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            if (!TextUtils.isEmpty(list.get(i).sortContent)) {
+                Character curChar = Character.toLowerCase(list.get(i).sortContent.charAt(0));
+                if (!lastCharcter.equals(curChar)) {
+                    map.put(curChar, i);
+                }
+                lastCharcter = curChar;
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 获取索引 Map
+     */
+    public Map<Character, Integer> getIndexMap() {
+        return indexMap;
+    }
+
+    /**
+     * 必须要排完序后，否则没意义
+     * @param list
+     */
+    private void updateInitialsVisible(List<ContactItem> list) {
+        if (null != list && list.size() > 0) {
+            char lastInitial = ' ';
+            for (ContactItem item : list) {
+                if (!TextUtils.isEmpty(item.sortContent)) {
+                    item.initialVisible = (lastInitial != item.sortContent.charAt(0));
+                    lastInitial = item.sortContent.charAt(0);
+                } else {
+                    item.initialVisible = true;
+                    lastInitial = ' ';
+                }
+            }
+        }
+    }
+
+    public class SortChineseName implements Comparator<ContactItem> {
+
+        @Override
+        public int compare(ContactItem str1, ContactItem str2) {
+            if (null == str1) {
+                return -1;
+            }
+            if (null == str2) {
+                return 1;
+            }
+            if (cmp.compare(str1.sortContent, str2.sortContent) > 0) {
+                return 1;
+            }else if (cmp.compare(str1.sortContent, str2.sortContent) < 0) {
+                return -1;
+            }
+            return 0;
+        }
+    }
+
+    public void setDataList(List<ContactItem> datas) {
+        mList.clear();
+        if(null != datas) {
+            this.mList.addAll(datas);
+        }
     }
 }

@@ -74,6 +74,17 @@
         <activity android:name=".activity.SteganoActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
+        <!-- Friends part -->
+        <activity android:name=".friend.AddFriendActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".friend.AddRequestActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".friend.UserInfoActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

@@ -22,6 +22,8 @@ public class Constants {
     public static final String STEGANO_MESSAGE = getPrefixConstant("stegano_message");
     public static final String STEGANO_ID = getPrefixConstant("stegano_id");
 
+    public static final String TARGET_USER_ID = getPrefixConstant("target_user_id");
+
     public static final String DATABASE_NAME  = "Stegano.db";
 
     private static String getPrefixConstant(String str) {
