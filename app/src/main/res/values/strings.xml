@@ -49,4 +49,12 @@
     <string name="friend_info_avatar">头像</string>
     <string name="friend_info_delect">删除好友</string>
     <string name="default_username">用户名</string>
+    <string name="carrier_storage">载体容量：</string>
+    <string name="carrier_default_storage">default_storage</string>
+    <string name="carrier_image_size">图像尺寸：</string>
+    <string name="carrier_add_time">添加时间：</string>
+    <string name="carrier_add_carrier">添加载体</string>
+    <string name="carrier_delete">删除</string>
+    <string name="profile_carrier_manage">载体管理</string>
+    <string name="profile_settings">设置</string>
 </resources>

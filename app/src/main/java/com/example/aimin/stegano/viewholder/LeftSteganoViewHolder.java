@@ -1,7 +1,8 @@
 package com.example.aimin.stegano.viewholder;
 
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +16,19 @@ import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
-import com.example.aimin.stegano.activity.ImageActivity;
+import com.example.aimin.stegano.stegano.ExtractProcess;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 import butterknife.Bind;
 
 /**
- * Created by aimin on 2017/3/26.
+ * Created by aimin on 2017/5/8.
  */
 
-public class LeftImageViewHolder extends CommonViewHolder {
+public class LeftSteganoViewHolder extends CommonViewHolder {
     @Bind(R.id.chat_left_text_tv_time)
     protected TextView timeView;
 
@@ -42,8 +44,11 @@ public class LeftImageViewHolder extends CommonViewHolder {
     private static final int MAX_DEFAULT_HEIGHT = 400;
     private static final int MAX_DEFAULT_WIDTH = 300;
 
-    public LeftImageViewHolder(Context context, ViewGroup root) {
+    private Context context;
+
+    public LeftSteganoViewHolder(Context context, ViewGroup root) {
         super(context, root, R.layout.left_image_layout);
+        this.context = context;
     }
 
     @Override
@@ -86,16 +91,42 @@ public class LeftImageViewHolder extends CommonViewHolder {
                 }
             });
 
+            steganoMsg.setVisibility(View.GONE);
             contentView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), ImageActivity.class);
-                    intent.setPackage(getContext().getPackageName());
-                    intent.putExtra(Constants.IMAGE_LOCAL_PATH, message.getLocalFilePath());
-                    intent.putExtra(Constants.IMAGE_URL, message.getFileUrl());
-                    intent.putExtra(Constants.IMAGE_HEIGHT,(double) message.getHeight());
-                    intent.putExtra(Constants.IMAGE_WIDTH,(double) message.getWidth());
-                    getContext().startActivity(intent);
+                    final AlertDialog.Builder normalDialog =
+                            new AlertDialog.Builder(context);
+                    normalDialog.setTitle("查看隐写");
+                    normalDialog.setMessage("查看隐写内容?");
+                    normalDialog.setPositiveButton("确定",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Map<String, Object> metaData = message.getAttrs();
+                                    if(metaData!= null){
+                                        if(metaData.containsKey("stegano")){
+                                            if((boolean)metaData.get("stegano")){
+                                                ExtractProcess ext = new ExtractProcess(getContext(), message.getFileUrl(),steganoMsg);
+                                                //steganoMsg.setText(ext.LSBExtract());
+                                                ext.JstegExtract_V1();
+                                                //Log.d("raz ext",ext.msg);
+                                                steganoMsg.setText(ext.msg);
+                                                steganoMsg.setVisibility(View.VISIBLE);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                    normalDialog.setNegativeButton("关闭",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //...To-do
+                                }
+                            });
+                    // 显示
+                    normalDialog.show();
                 }
             });
         }

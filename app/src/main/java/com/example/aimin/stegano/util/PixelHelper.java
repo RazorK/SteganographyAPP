@@ -1,4 +1,4 @@
-package com.example.aimin.stegano.stegano;
+package com.example.aimin.stegano.util;
 
 /**
  * Created by aimin on 2017/4/4.
@@ -12,8 +12,8 @@ public class PixelHelper {
     private int nowHeight;
     private int nowWidth;
 
-    public PixelHelper(int length,int width){
-        this.height = length-1;
+    public PixelHelper(int height,int width){
+        this.height = height-1;
         this.width = width-1;
         this.nowHeight = this.nowWidth = 0;
     }
@@ -38,5 +38,22 @@ public class PixelHelper {
             nowWidth++;
             return true;
         }
+    }
+
+    public void resetPh() {
+        this.nowHeight = this.nowWidth = 0;
+    }
+
+    public int getAheadHeight(){
+        if(nowWidth==0)
+            return nowHeight-1;
+        else return nowHeight;
+    }
+
+    public int getAheadWidth(){
+        if(nowWidth==0)
+            return width;
+        else
+            return nowWidth-1;
     }
 }

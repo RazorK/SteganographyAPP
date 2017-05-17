@@ -1,15 +1,15 @@
 package com.example.aimin.stegano.activity;
 
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.aimin.stegano.Constants;
-import com.example.aimin.stegano.db.DBHelper;
 import com.example.aimin.stegano.R;
+import com.example.aimin.stegano.db.DBConsult;
+import com.example.aimin.stegano.db.DBHelper;
 
 import butterknife.Bind;
 
@@ -32,20 +32,18 @@ public class TestActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.test_layout);
 
-        dbHelper = new DBHelper(TestActivity.this, Constants.DATABASE_NAME, null, 1);
-
         testbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                ContentValues values = new ContentValues();
-            // 开始组装第一条数据
-                values.put("leanID", "Dan Brown");
-                values.put("username", "wtf");
-                db.insert("user", null, values); // 插入第一条数据
-                values.clear();
+                DBConsult dBConsolt = new DBConsult(TestActivity.this);
+                dBConsolt.addCarrier("testUserId","testUsername",123.456,123456,"filepath","inserttime");
+                Cursor result = dBConsolt.getAllCarrier();
+                if(result.moveToFirst()){
+                    do{
+                        Log.d("raz",result.getString(result.getColumnIndex("username")));
+                    } while (result.moveToNext());
+                }
             }
         });
-
     }
 }

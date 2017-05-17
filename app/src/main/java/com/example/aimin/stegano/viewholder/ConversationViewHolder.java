@@ -62,7 +62,7 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
         query.findInBackground(new FindCallback<AVUser>() {
             @Override
             public void done(List<AVUser> list, AVException e) {
-                if(list.size() > 0){
+                if(list!=null){
                     AVUser targetUser = list.get(0);
                     contentHandle(targetUser, target_conv);
                 }

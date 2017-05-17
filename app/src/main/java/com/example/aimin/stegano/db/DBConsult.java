@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.aimin.stegano.Constants;
+import com.example.aimin.stegano.model.CarrierItem;
 
 
 /**
@@ -20,6 +21,48 @@ public class DBConsult {
 
     public DBConsult(Context context){
         db = new DBHelper(context, Constants.DATABASE_NAME, null, 1).getWritableDatabase();
+    }
+
+    public Cursor getAllCarrier() {
+        Cursor cursor = db.query("carrier", null, null, null, null, null, null);
+        return cursor;
+    }
+
+    public Cursor getUserCarrier() {
+        //String[] selectionArgs = {AVUser.getCurrentUser().getObjectId()};
+        //
+        Cursor cursor = db.query("carrier", null, null, null, null, null, null);
+        return cursor;
+    }
+
+    public void addCarrier(String userId, String username, double size, int storage, String filepath, String inserttime) {
+        ContentValues values = new ContentValues();
+        values.put("userid ",userId);
+        values.put("username",username);
+        values.put("size ",size);
+        values.put("storage", storage);
+        values.put("filepath",filepath);
+        values.put("inserttime", inserttime);
+        db.insert("carrier",null,values);
+        Log.d("raz","in addSteganoMsg, after insert");
+        values.clear();
+    }
+
+    public void addCarrier(CarrierItem ci) {
+        ContentValues values = new ContentValues();
+        values.put("userid ",ci.userId);
+        values.put("username",ci.username);
+        values.put("size ",ci.size);
+        values.put("storage", ci.storage);
+        values.put("filepath",ci.filepath);
+        values.put("inserttime", ci.inserttime);
+        db.insert("carrier",null,values);
+        Log.d("raz","in addSteganoMsg, after insert");
+        values.clear();
+    }
+
+    public void deleteCarrier(CarrierItem ci) {
+        db.delete("carrier","id=?",new String[] {String.valueOf(ci.datebaseId)});
     }
 
     /**

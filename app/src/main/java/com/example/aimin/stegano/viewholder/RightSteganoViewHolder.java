@@ -1,7 +1,8 @@
 package com.example.aimin.stegano.viewholder;
 
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -19,9 +20,8 @@ import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.example.aimin.stegano.Constants;
-import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.R;
-import com.example.aimin.stegano.activity.ImageActivity;
+import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.stegano.ExtractProcess;
 import com.squareup.picasso.Picasso;
 
@@ -32,10 +32,10 @@ import java.util.Map;
 import butterknife.Bind;
 
 /**
- * Created by aimin on 2017/3/26.
+ * Created by aimin on 2017/5/8.
  */
 
-public class RightImageViewHolder extends CommonViewHolder {
+public class RightSteganoViewHolder extends CommonViewHolder {
     @Bind(R.id.chat_right_text_tv_time)
     protected TextView timeView;
 
@@ -62,8 +62,13 @@ public class RightImageViewHolder extends CommonViewHolder {
 
     private AVIMImageMessage message;
 
-    public RightImageViewHolder(Context context, ViewGroup root) {
+    private Context context;
+
+    public RightSteganoViewHolder(Context context, ViewGroup root) {
         super(context, root, R.layout.right_image_layout);
+        this.context = context;
+        Log.d("raz","in vh init");
+        steganoMsg.setVisibility(View.GONE);
     }
 
     /**
@@ -95,39 +100,6 @@ public class RightImageViewHolder extends CommonViewHolder {
             Constants.HW hw = Constants.resize(actualHight, actualWidth, viewHeight,viewWidth);
             viewHeight = hw.height;
             viewWidth = hw.width;
-
-            //获取MSG
-            //情形1:发送传来msg 无leanid/imagurl
-            //情形2:刷新从前的消息，包含(leanid/imageurl)
-            //情形3:异地登陆，无法找到相关数据库
-            //TODO: 加入Userid检测
-            //TODO： 加入完备储存
-            Map<String, Object> metaData = message.getAttrs();
-            if(metaData!=null && metaData.containsKey("stegano") && (boolean)metaData.get("stegano")) {
-                if (metaData.containsKey("steganoId") && !metaData.get("steganoId").toString().equals("")) {
-
-                    String sid = metaData.get("steganoId").toString();
-
-                    //获取数据库中信息
-                    String msg = new DBConsult(getContext()).getSteganoMsgBySteganoId(sid);
-
-                    //没查到或者没有记录，都要保存
-                    if (!msg.equals("")) {
-                        //TODO：不确定要不要保存url/leanid
-                        steganoMsg.setText(msg);
-                        steganoMsg.setVisibility(View.VISIBLE);
-                    } else {
-                        //todo:保存信息
-                        String steMsg = getExtractMsg(message.getFileUrl());
-                        steganoMsg.setText(steMsg);
-
-                        //TODO：先做数据缓存，之后做图片缓存
-                        bindSteganoMsg(sid,steMsg,Constants.getCachePath(getContext(),AVUser.getCurrentUser().getObjectId(),sid),message.getConversationId(),
-                                message.getMessageId(),message.getFileUrl());
-                        steganoMsg.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
 
             if (!TextUtils.isEmpty(message.getFileUrl())) {
                 if(message.getFileMetaData().get("format")!= null && message.getFileMetaData().get("format").toString().equals("image/bmp")) {
@@ -170,20 +142,64 @@ public class RightImageViewHolder extends CommonViewHolder {
                 loadingBar.setVisibility(View.VISIBLE);
                 statusView.setVisibility(View.VISIBLE);
             } else {
-                Log.d("resend", "hello may i");
                 statusView.setVisibility(View.GONE);
             }
 
+            steganoMsg.setVisibility(View.GONE);
             contentView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), ImageActivity.class);
-                    intent.setPackage(getContext().getPackageName());
-                    intent.putExtra(Constants.IMAGE_LOCAL_PATH, message.getLocalFilePath());
-                    intent.putExtra(Constants.IMAGE_URL, message.getFileUrl());
-                    intent.putExtra(Constants.IMAGE_HEIGHT,(double) message.getHeight());
-                    intent.putExtra(Constants.IMAGE_WIDTH,(double) message.getWidth());
-                    getContext().startActivity(intent);
+                    final AlertDialog.Builder normalDialog =
+                            new AlertDialog.Builder(context);
+                    normalDialog.setTitle("查看隐写");
+                    normalDialog.setMessage("查看隐写内容?");
+                    normalDialog.setPositiveButton("确定",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //获取MSG
+                                    //情形1:发送传来msg 无leanid/imagurl
+                                    //情形2:刷新从前的消息，包含(leanid/imageurl)
+                                    //情形3:异地登陆，无法找到相关数据库
+                                    //TODO: 加入Userid检测
+                                    //TODO： 加入完备储存
+                                    Map<String, Object> metaData = message.getAttrs();
+                                    if(metaData!=null && metaData.containsKey("stegano") && (boolean)metaData.get("stegano")) {
+                                        if (metaData.containsKey("steganoId") && !metaData.get("steganoId").toString().equals("")) {
+
+                                            String sid = metaData.get("steganoId").toString();
+
+                                            //获取数据库中信息
+                                            String msg = new DBConsult(getContext()).getSteganoMsgBySteganoId(sid);
+
+                                            //没查到或者没有记录，都要保存
+                                            if (!msg.equals("")) {
+                                                //TODO：不确定要不要保存url/leanid
+                                                steganoMsg.setText(msg);
+                                                steganoMsg.setVisibility(View.VISIBLE);
+                                            } else {
+                                                //todo:保存信息
+                                                String steMsg = getExtractMsg(message.getFileUrl());
+                                                steganoMsg.setText(steMsg);
+
+                                                //TODO：先做数据缓存，之后做图片缓存
+                                                bindSteganoMsg(sid,steMsg,Constants.getCachePath(getContext(),AVUser.getCurrentUser().getObjectId(),sid),message.getConversationId(),
+                                                        message.getMessageId(),message.getFileUrl());
+                                                steganoMsg.setVisibility(View.VISIBLE);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                    normalDialog.setNegativeButton("关闭",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //...To-do
+                                }
+                            });
+                    // 显示
+                    normalDialog.show();
                 }
             });
         }
@@ -203,7 +219,7 @@ public class RightImageViewHolder extends CommonViewHolder {
 
     //完备bind函数，包含全部信息
     private void bindSteganoMsg(String steganoId, String msg, String cachePath,
-                                    String conversationId,String leanId, String imageurl) {
+                                String conversationId,String leanId, String imageurl) {
         String userId = AVUser.getCurrentUser().getObjectId();
         new DBConsult(getContext()).fullBindSteganoMsg(steganoId,msg,cachePath, userId,conversationId,leanId,imageurl);
     }

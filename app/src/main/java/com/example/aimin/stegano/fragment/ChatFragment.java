@@ -310,7 +310,7 @@ public class ChatFragment extends Fragment {
                 }
             }
             itemAdapter.addMessage(event.message);
-            itemAdapter.notifyDataSetChanged();
+            itemAdapter.notifyAll();
             scrollToBottom();
         }
     }

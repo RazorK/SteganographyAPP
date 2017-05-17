@@ -24,6 +24,9 @@ public class Constants {
 
     public static final String TARGET_USER_ID = getPrefixConstant("target_user_id");
 
+    public static final String CARRIER_SELECT = getPrefixConstant("carrier_select");
+    public static final String CARRIER_SELECT_ITEM = getPrefixConstant("carrier_select_item");
+
     public static final String DATABASE_NAME  = "Stegano.db";
 
     private static String getPrefixConstant(String str) {
@@ -61,6 +64,13 @@ public class Constants {
         String fileDir = activity.getFilesDir().toString();
         return fileDir+"/"+userId+"/"+steganoId;
     }
+
+    //设置载体图片保存地址
+    public static String getCarrierPath(Context activity , String userId, String time){
+        String fileDir = activity.getFilesDir().toString();
+        return fileDir+"/"+userId+"_"+"carrier"+"_"+time+".png";
+    }
+
 
     public static void createCacheFolder(Context activity , String userId){
         String fileDir = activity.getFilesDir().toString();

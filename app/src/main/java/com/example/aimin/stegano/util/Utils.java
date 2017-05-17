@@ -3,7 +3,11 @@ package com.example.aimin.stegano.util;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.aimin.stegano.LeanApplication;
@@ -13,6 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 /**
  * Created by aimin on 2017/4/17.
@@ -59,5 +64,62 @@ public class Utils {
             } catch (Exception e) {
             }
         }
+    }
+
+    /**
+     * 根据 Uri 获取文件所在的位置
+     *
+     * @param context
+     * @param contentUri
+     * @return
+     */
+    public static String getRealPathFromURI(Context context, Uri contentUri) {
+        if (contentUri.getScheme().equals("file")) {
+            Log.d("raz","1in ChatFragment getRealpath "+ contentUri.getEncodedPath());
+            return contentUri.getEncodedPath();
+        } else {
+            Cursor cursor = null;
+            try {
+                String[] proj = {MediaStore.Images.Media.DATA};
+                cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+                if (null != cursor) {
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    cursor.moveToFirst();
+                    return cursor.getString(column_index);
+                } else {
+                    return "";
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+    }
+
+    public static String bitsFormat(double bits){
+        return bytesFormat(bits/8);
+    }
+
+    public static String bytesFormat(double bytes){
+        DecimalFormat df = new DecimalFormat("#.00");
+        String fileSizeString = "";
+        String wrongSize="0B";
+        if(bytes==0){
+            return wrongSize;
+        }
+        if (bytes < 1024){
+            fileSizeString = df.format(bytes) + "B";
+        }
+        else if (bytes < 1048576){
+            fileSizeString = df.format(bytes / 1024) + "KB";
+        }
+        else if (bytes < 1073741824){
+            fileSizeString = df.format(bytes / 1048576) + "MB";
+        }
+        else{
+            fileSizeString = df.format(bytes / 1073741824) + "GB";
+        }
+        return fileSizeString;
     }
 }

@@ -31,6 +31,15 @@ public class DBHelper extends SQLiteOpenHelper {
             + "type int, "
             + "imagecachepath text)";
 
+    public static final String CREATE_CARRIER = "create table carrier ("
+            + "id integer primary key autoincrement, "
+            + "userid text,"
+            + "username text,"
+            + "size real,"
+            + "storage int,"
+            + "filepath text,"
+            + "inserttime text)";
+
     private Context mContext;
 
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -41,6 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_BOOK);
         db.execSQL(CREATE_MESSAGE);
+        db.execSQL(CREATE_CARRIER);
         Toast.makeText(mContext, "Create succeeded", Toast.LENGTH_SHORT).show();
     }
     @Override

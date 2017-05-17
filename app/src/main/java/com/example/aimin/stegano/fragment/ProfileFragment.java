@@ -19,6 +19,7 @@ import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.SaveCallback;
 import com.example.aimin.stegano.R;
+import com.example.aimin.stegano.activity.CarrierActivity;
 import com.example.aimin.stegano.event.LogoutEvent;
 import com.example.aimin.stegano.util.PathUtils;
 import com.example.aimin.stegano.util.Utils;
@@ -72,6 +73,14 @@ public class ProfileFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 EventBus.getDefault().post(new LogoutEvent());
+            }
+        });
+
+        RelativeLayout carrier = (RelativeLayout)view.findViewById(R.id.profile_carrier_container);
+        carrier.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), CarrierActivity.class));
             }
         });
         return view;

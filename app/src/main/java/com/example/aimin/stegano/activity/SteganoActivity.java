@@ -27,7 +27,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -94,9 +93,13 @@ public class SteganoActivity extends BaseActivity {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, null);
-                photoPickerIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                startActivityForResult(photoPickerIntent, REQUEST_IMAGE_PICK);
+                /*Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, null);
+                photoPickerIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image*//*");
+                startActivityForResult(photoPickerIntent, REQUEST_IMAGE_PICK);*/
+                //这里改为打开载体选择界面
+                Intent intent = new Intent(SteganoActivity.this,CarrierActivity.class);
+                intent.putExtra(Constants.CARRIER_SELECT,true);
+                startActivityForResult(intent,REQUEST_IMAGE_PICK);
             }
         });
 
@@ -115,18 +118,15 @@ public class SteganoActivity extends BaseActivity {
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-
-                    try {
-                        stegano.LSBProcess();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    stegano.JstegProcess_V1();
                     Intent intent = new Intent();
                     intent.putExtra(Constants.STEGANO_SETIMAGE_PATH, setFilePath);
                     intent.putExtra(Constants.STEGANO_MESSAGE,msg);
                     intent.putExtra(Constants.STEGANO_ID,sid);
                     setResult(RESULT_OK, intent);
                     finish();
+                } else {
+                    toast("消息不能为空");
                 }
             }
         });
@@ -138,7 +138,9 @@ public class SteganoActivity extends BaseActivity {
         if (Activity.RESULT_OK == resultCode) {
             switch (requestCode) {
                 case REQUEST_IMAGE_PICK:
-                    oriFilePath = getRealPathFromURI(this, data.getData());
+                    oriFilePath = data.getStringExtra(Constants.CARRIER_SELECT_ITEM);
+                    //String ori = getRealPathFromURI(this, data.getData());
+                    //Log.d("raz","compare"+ori+"  finish\n"+ oriFilePath);
                     //TODO: cut picture size
                     getSimpleSize();
                     hintLayout.setVisibility(View.GONE);
