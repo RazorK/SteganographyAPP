@@ -1,6 +1,7 @@
 package com.example.aimin.stegano;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.AVIMConversation;
@@ -25,6 +26,7 @@ public class MessageHandler extends AVIMTypedMessageHandler<AVIMTypedMessage> {
 
     @Override
     public void onMessage(AVIMTypedMessage message, AVIMConversation conversation, AVIMClient client) {
+        Log.d("raz","receiveMSG");
         String clientID = "";
         try {
             clientID = ClientManager.getInstance().getClientId();
@@ -48,6 +50,7 @@ public class MessageHandler extends AVIMTypedMessageHandler<AVIMTypedMessage> {
      * @param conv
      */
     private void sendEvent(AVIMTypedMessage msg, AVIMConversation conv){
+        Log.d("raz","sending");
         TypedMessageEvent event = new TypedMessageEvent();
         event.message = msg;
         event.conversation = conv;

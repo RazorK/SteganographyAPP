@@ -35,7 +35,7 @@ import java.util.List;
 
 import butterknife.Bind;
 
-import static com.example.aimin.stegano.util.Utils.getRealPathFromURI;
+import static com.example.aimin.stegano.util.Utils.getImagePathFromURI;
 
 /**
  * Created by aimin on 2017/5/14.
@@ -108,7 +108,8 @@ public class CarrierActivity extends BaseActivity {
         if (Activity.RESULT_OK == resultCode) {
             switch (requestCode) {
                 case REQUEST_IMAGE_PICK:
-                    final String oriFilePath = getRealPathFromURI(this, data.getData());
+                    final String oriFilePath = getImagePathFromURI(this, data.getData());
+
                     final double ss = getSimpleSize(oriFilePath);
                     //创建文件 获取信息保存 刷新list
 

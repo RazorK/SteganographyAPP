@@ -301,6 +301,7 @@ public class ChatFragment extends Fragment {
      * 同理，避免无效消息，此处加了 conversation id 判断
      */
     public void onEvent(TypedMessageEvent event) {
+        Log.d("raz","receiving");
         if (null != mConversation && null != event &&
                 mConversation.getConversationId().equals(event.conversation.getConversationId())) {
             if(event.message instanceof AVIMImageMessage){
@@ -310,7 +311,7 @@ public class ChatFragment extends Fragment {
                 }
             }
             itemAdapter.addMessage(event.message);
-            itemAdapter.notifyAll();
+            //itemAdapter.notifyAll();
             scrollToBottom();
         }
     }
