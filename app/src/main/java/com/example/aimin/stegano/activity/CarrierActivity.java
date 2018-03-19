@@ -28,10 +28,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 
@@ -67,7 +69,9 @@ public class CarrierActivity extends BaseActivity {
         Intent intent = getIntent();
         mSelect = intent.getBooleanExtra(Constants.CARRIER_SELECT,false);
 
-        toolbar.setTitle("载体管理");
+        // TODO dynamic get the res.
+        // toolbar.setTitle("载体管理");
+        toolbar.setTitle("Carriers Management");
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.btn_navigation_back);
         toolbar.setTitleTextColor(getResources().getColor(R.color.common_white));
@@ -140,8 +144,11 @@ public class CarrierActivity extends BaseActivity {
                             ci.userId = AVUser.getCurrentUser().getObjectId();
                             ci.username = AVUser.getCurrentUser().getUsername();
 
-                            SimpleDateFormat aformatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
-                            String str =aformatter.format(curDate);
+                            int style = DateFormat.MEDIUM;
+                            DateFormat df;
+                            df = DateFormat.getDateInstance(style, Locale.US);
+                            // SimpleDateFormat aformatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+                            String str =df.format(curDate);
                             ci.inserttime = str;
 
                             //TODO: storage caculate
@@ -188,6 +195,7 @@ public class CarrierActivity extends BaseActivity {
                 CarrierItem ci = new CarrierItem();
                 ci.storage = result.getInt(result.getColumnIndex("storage"));
                 ci.filepath = result.getString(result.getColumnIndex("filepath"));
+                Log.d("raz", ci.filepath);
                 ci.size = result.getDouble(result.getColumnIndex("size"));
                 ci.inserttime = result.getString(result.getColumnIndex("inserttime"));
                 ci.datebaseId = result.getInt(result.getColumnIndex("id"));
@@ -197,7 +205,7 @@ public class CarrierActivity extends BaseActivity {
         Log.d("raz","after initData"+mList.size());
     }
 
-    private double getSimpleSize(String oriFilePath){
+    public static double getSimpleSize(String oriFilePath){
         double simpleSize;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;

@@ -19,14 +19,15 @@ import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMImageMessage;
 import com.example.aimin.stegano.Constants;
-import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.R;
 import com.example.aimin.stegano.activity.ImageActivity;
+import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.stegano.ExtractProcess;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -80,8 +81,13 @@ public class RightImageViewHolder extends CommonViewHolder {
     public void bindData(Object o) {
         message = (AVIMImageMessage)o;
         if(message instanceof AVIMImageMessage) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            String time = dateFormat.format(message.getTimestamp());
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//            String time = dateFormat.format(message.getTimestamp());
+            int style = DateFormat.MEDIUM;
+            DateFormat df;
+            df = DateFormat.getDateInstance(style, Locale.US);
+            String time = df.format(message.getTimestamp());
+
             String localFilePath = message.getLocalFilePath();
             Log.d("raz", "in raz getlocalFilePath"+localFilePath);
 

@@ -1,7 +1,11 @@
 package com.example.aimin.stegano.activity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -26,6 +30,7 @@ import com.avos.avoscloud.im.v2.AVIMException;
 import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
 import com.example.aimin.stegano.Constants;
 import com.example.aimin.stegano.R;
+import com.example.aimin.stegano.db.DBConsult;
 import com.example.aimin.stegano.event.FriendClickEvent;
 import com.example.aimin.stegano.event.LogoutEvent;
 import com.example.aimin.stegano.event.RefreshConversationListEvent;
@@ -34,12 +39,27 @@ import com.example.aimin.stegano.fragment.FriendFragment;
 import com.example.aimin.stegano.fragment.ProfileFragment;
 import com.example.aimin.stegano.manager.ActivityManager;
 import com.example.aimin.stegano.manager.ClientManager;
+import com.example.aimin.stegano.model.CarrierItem;
+import com.example.aimin.stegano.util.CarrierAsyncTast;
+import com.example.aimin.stegano.util.MatUtils;
 import com.squareup.picasso.Picasso;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import de.greenrobot.event.EventBus;
 
+import static com.example.aimin.stegano.activity.CarrierActivity.getSimpleSize;
+import static com.example.aimin.stegano.util.Utils.getImagePathFromURI;
+
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final int REQUEST_IMAGE_PICK = 0;
 
     private static final String FRAGMENT_TAG_CONVERSATION = "conversation";
     private static final String FRAGMENT_TAG_CONTACT = "contact";
@@ -151,7 +171,10 @@ public class MainActivity extends BaseActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-            startActivity(new Intent(this,TestActivity.class));
+            // startActivity(new Intent(this,TestActivity.class));
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, null);
+            photoPickerIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+            startActivityForResult(photoPickerIntent, REQUEST_IMAGE_PICK);
         } else if (id == R.id.nav_gallery) {
             startActivity(new Intent(this,CarrierActivity.class));
         } else if (id == R.id.nav_slideshow) {
@@ -249,5 +272,78 @@ public class MainActivity extends BaseActivity
             }
         });
         AVUser.getCurrentUser().logOut();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (Activity.RESULT_OK == resultCode) {
+            switch (requestCode) {
+                case REQUEST_IMAGE_PICK:
+                    final String oriFilePath = getImagePathFromURI(this, data.getData());
+
+                    final double ss = getSimpleSize(oriFilePath);
+                    //创建文件 获取信息保存 刷新list
+
+                    SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMddHHmmss");
+                    final Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                    String time = formatter.format(curDate);
+
+                    final String setFilePath = Constants.getCarrierPath(this, AVUser.getCurrentUser().getObjectId(),time);
+
+                    new CarrierAsyncTast(this){
+                        @Override
+                        protected CarrierItem doInBackground(Void... params) {
+                            BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+                            bitmapOptions.inSampleSize = (int)ss;
+                            Bitmap bm = BitmapFactory.decodeFile(oriFilePath,bitmapOptions).copy(Bitmap.Config.ARGB_8888,true);
+                            try {
+                                FileOutputStream setFileStream = new FileOutputStream(setFilePath);
+                                bm.compress(Bitmap.CompressFormat.PNG,100,setFileStream);
+                                setFileStream.close();
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            CarrierItem ci = new CarrierItem();
+                            ci.filepath = setFilePath;
+                            ci.userId = AVUser.getCurrentUser().getObjectId();
+                            ci.username = AVUser.getCurrentUser().getUsername();
+
+                            SimpleDateFormat aformatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+                            String str =aformatter.format(curDate);
+                            ci.inserttime = str;
+
+                            //TODO: storage caculate
+                            ci.storage = MatUtils.JstegCount(ci.filepath);
+
+                            try {
+                                FileInputStream inputStream = new FileInputStream(setFilePath);
+                                ci.size=inputStream.available();
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            return ci;
+                        }
+
+                        @Override
+                        protected void onPostExecute(CarrierItem carrierItem) {
+                            super.onPostExecute(carrierItem);
+                            //db
+                            new DBConsult(MainActivity.this).addCarrier(carrierItem);
+
+                            // openCarrierAct
+                            startActivity(new Intent(MainActivity.this,CarrierActivity.class));
+                        }
+                    }.execute();
+                default:
+                    break;
+            }
+        }
     }
 }

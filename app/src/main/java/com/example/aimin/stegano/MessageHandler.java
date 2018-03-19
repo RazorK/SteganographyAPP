@@ -50,7 +50,8 @@ public class MessageHandler extends AVIMTypedMessageHandler<AVIMTypedMessage> {
      * @param conv
      */
     private void sendEvent(AVIMTypedMessage msg, AVIMConversation conv){
-        Log.d("raz","sending");
+        Log.d("raz","sendingEvent");
+        Log.d("raz", msg.toString());
         TypedMessageEvent event = new TypedMessageEvent();
         event.message = msg;
         event.conversation = conv;

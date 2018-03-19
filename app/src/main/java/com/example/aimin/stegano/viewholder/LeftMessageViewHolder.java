@@ -13,7 +13,8 @@ import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMTextMessage;
 import com.example.aimin.stegano.R;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.util.Locale;
 
 import butterknife.Bind;
 
@@ -38,10 +39,15 @@ public class LeftMessageViewHolder extends CommonViewHolder{
     @Override
     public void bindData(Object o) {
         AVIMMessage message = (AVIMMessage)o;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
-        String time = dateFormat.format(message.getTimestamp());
+        int style = DateFormat.MEDIUM;
+        DateFormat df;
+        df = DateFormat.getDateInstance(style, Locale.US);
+        // System.out.println("USA: " + df.format(date));
+        // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+        String time = df.format(message.getTimestamp());
 
-        String content =  "暂不支持此消息类型";
+        // TODO: add Chinese support
+        String content =  "Sorry, the message type is not supported now.";
         if (message instanceof AVIMTextMessage) {
             content = ((AVIMTextMessage)message).getText();
         }
