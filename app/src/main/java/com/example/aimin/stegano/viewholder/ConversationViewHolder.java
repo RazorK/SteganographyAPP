@@ -120,7 +120,8 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
             if(msg instanceof AVIMTextMessage){
                 contentView.setText(((AVIMTextMessage) msg).getText());
             } else if(msg instanceof AVIMImageMessage) {
-                contentView.setText("[图片]");
+                // TODO chinese adapt
+                contentView.setText("[Image]");
             }
         }
     }
