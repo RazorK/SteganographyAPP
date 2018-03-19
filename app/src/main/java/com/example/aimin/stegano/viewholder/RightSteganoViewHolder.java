@@ -26,8 +26,7 @@ import com.example.aimin.stegano.stegano.ExtractProcess;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.util.Locale;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -88,10 +87,8 @@ public class RightSteganoViewHolder extends CommonViewHolder {
         if(message instanceof AVIMImageMessage) {
 //            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 //            String time = dateFormat.format(message.getTimestamp());
-            int style = DateFormat.MEDIUM;
-            DateFormat df;
-            df = DateFormat.getDateInstance(style, Locale.US);
-            String time = df.format(message.getTimestamp());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            String time = dateFormat.format(message.getTimestamp());
 
             String localFilePath = message.getLocalFilePath();
             Log.d("raz", "in raz getlocalFilePath"+localFilePath);

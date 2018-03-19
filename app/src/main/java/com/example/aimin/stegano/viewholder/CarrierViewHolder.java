@@ -67,16 +67,18 @@ public class CarrierViewHolder extends RecyclerView.ViewHolder implements View.O
          */
         final AlertDialog.Builder normalDialog =
                 new AlertDialog.Builder(context);
-        normalDialog.setTitle("删除载体");
-        normalDialog.setMessage("你确定要删除该载体么?");
-        normalDialog.setPositiveButton("确定",
+        // TODO: adapt Chinese
+        //normalDialog.setTitle("删除载体");
+        normalDialog.setTitle("Delete Carrier");
+        normalDialog.setMessage("Are you sure to delete the carrier?");
+        normalDialog.setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mlistener.onClickDeleteBtn((CarrierItem) deleteBtn.getTag(),getLayoutPosition());
                 }
                 });
-        normalDialog.setNegativeButton("取消",
+        normalDialog.setNegativeButton("No",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

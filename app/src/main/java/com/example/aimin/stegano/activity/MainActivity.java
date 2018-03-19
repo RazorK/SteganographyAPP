@@ -48,8 +48,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import de.greenrobot.event.EventBus;
 
@@ -312,8 +314,10 @@ public class MainActivity extends BaseActivity
                             ci.userId = AVUser.getCurrentUser().getObjectId();
                             ci.username = AVUser.getCurrentUser().getUsername();
 
-                            SimpleDateFormat aformatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
-                            String str =aformatter.format(curDate);
+                            int style = DateFormat.LONG;
+                            DateFormat df;
+                            df = DateFormat.getDateInstance(style, Locale.US);
+                            String str =df.format(curDate);
                             ci.inserttime = str;
 
                             //TODO: storage caculate

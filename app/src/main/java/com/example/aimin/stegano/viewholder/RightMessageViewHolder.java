@@ -17,8 +17,7 @@ import com.avos.avoscloud.im.v2.AVIMMessage;
 import com.avos.avoscloud.im.v2.messages.AVIMTextMessage;
 import com.example.aimin.stegano.R;
 
-import java.text.DateFormat;
-import java.util.Locale;
+import java.text.SimpleDateFormat;
 
 import butterknife.Bind;
 
@@ -66,11 +65,8 @@ public class RightMessageViewHolder extends CommonViewHolder {
         message = (AVIMMessage)o;
 //        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 //        String time = dateFormat.format(message.getTimestamp());
-        int style = DateFormat.MEDIUM;
-        DateFormat df;
-        df = DateFormat.getDateInstance(style, Locale.US);
-        String time = df.format(message.getTimestamp());
-
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String time = dateFormat.format(message.getTimestamp());
         String content = "暂不支持此消息类型";
         if (message instanceof AVIMTextMessage) {
             content = ((AVIMTextMessage)message).getText();

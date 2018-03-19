@@ -28,12 +28,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 
@@ -144,11 +142,8 @@ public class CarrierActivity extends BaseActivity {
                             ci.userId = AVUser.getCurrentUser().getObjectId();
                             ci.username = AVUser.getCurrentUser().getUsername();
 
-                            int style = DateFormat.MEDIUM;
-                            DateFormat df;
-                            df = DateFormat.getDateInstance(style, Locale.US);
-                            // SimpleDateFormat aformatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
-                            String str =df.format(curDate);
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                            String str =dateFormat.format(curDate);
                             ci.inserttime = str;
 
                             //TODO: storage caculate
